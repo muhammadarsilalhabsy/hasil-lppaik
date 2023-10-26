@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -46,12 +47,24 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles = new HashSet<>();
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "user_activities",
+          joinColumns = @JoinColumn(name = "user_username", referencedColumnName = "username"),
+          inverseJoinColumns = @JoinColumn(name = "activity_obj_id", referencedColumnName = "obj_id"))
+  private Set<Activity> activities = new HashSet<>();
+
   @ManyToOne
   @JoinColumn(name = "major", referencedColumnName = "id")
   private Major major;
 
   @OneToOne(mappedBy = "user")
   private Certificate certificate;
+
+  @OneToMany(mappedBy = "user")
+  private List<ControlBookDetail> controlBookDetailUser;
+
+  @OneToMany(mappedBy = "tutor")
+  private List<ControlBookDetail> controlBookDetailTutor;
 
 
 
