@@ -34,6 +34,11 @@ public class User {
 
   private String token;
 
+  private Boolean completed = false;
+
+  @Lob
+  private String motto;
+
   @Enumerated(value = EnumType.STRING)
   private Gender gender;
 
@@ -53,7 +58,7 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "activity_obj_id", referencedColumnName = "obj_id"))
   private Set<Activity> activities = new HashSet<>();
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "major", referencedColumnName = "id")
   private Major major;
 

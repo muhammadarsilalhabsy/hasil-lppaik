@@ -51,12 +51,14 @@ public class TestInsert {
               activityRepo.saveAll(img.getActivities());
               imgRepo.delete(img);
             });
+    imgRepo.deleteAll();
     activityRepo.findAll()
             .forEach(activity -> {
               activity.getUsers().forEach(u -> u.getActivities().remove(activity));
               userRepo.saveAll(activity.getUsers());
               activityRepo.delete(activity);
             });
+    activityRepo.deleteAll();
     certificateRepo.deleteAll();
     cbdRepo.deleteAll();
     userRepo.deleteAll();
@@ -67,6 +69,7 @@ public class TestInsert {
 
               roleRepo.delete(role);
             });
+    roleRepo.deleteAll();
     majorRepo.deleteAll();
 
     Role role = new Role();
@@ -94,6 +97,7 @@ public class TestInsert {
     user1.setPassword("rahasia");
     user1.setEmail("apom@gmail.com");
     user1.setUsername("219999");
+    user1.setCompleted(true);
 
     Activity activity = new Activity();
     activity.setId(1);
@@ -109,6 +113,19 @@ public class TestInsert {
     activityRepo.save(activity);
     userRepo.saveAll(List.of(user, user1));
     majorRepo.saveAll(List.of(pti, hukum));
+
+  }
+
+  @Test
+  void testIsCompleted() {
+    User apon = userRepo.findById("219999").orElse(null);
+    User budi = userRepo.findById("2191100").orElse(null);
+
+    Assertions.assertNotNull(apon);
+    Assertions.assertNotNull(budi);
+    Assertions.assertTrue(apon.getCompleted());
+    Assertions.assertFalse(budi.getCompleted());
+
 
   }
 
@@ -194,6 +211,7 @@ public class TestInsert {
     user.setEmail("otong@gmail.com");
     user.setUsername("020901");
     user.setRoles(roles);
+    user.setCompleted(false);
 
     User user2 = new User();
     user2.setName("jamal");
@@ -201,6 +219,7 @@ public class TestInsert {
     user2.setEmail("jamal@gmail.com");
     user2.setUsername("020902");
     user2.setRoles(Set.of(mahasiswa));
+    user2.setCompleted(true);
 
 
     User user3 = new User();
@@ -209,6 +228,7 @@ public class TestInsert {
     user3.setEmail("abilal@gmail.com");
     user3.setUsername("020903");
     user3.setRoles(Set.of(admin));
+    user3.setCompleted(false);
 
     roleRepo.saveAll(roles);
     userRepo.saveAll(List.of(user, user2));
