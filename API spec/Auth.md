@@ -42,7 +42,6 @@ Response Body (2xx)
 }
 ```
 
-
 Response Body (4xx)
 
 ```json
@@ -80,14 +79,18 @@ Response Body (2xx)
       "major": "M199",
       "completed": false,
       "motto": null,
-      "avatar": null.,
-      "roles": ["MAHASISWA","ADMIN"]
+      "avatar": null,
+      "roles": [
+        "MAHASISWA",
+        "ADMIN"
+      ]
     }
   }
 }
 ```
 
 Response Body (4xx)
+
 ```json
 {
   "message": "error message"
@@ -114,6 +117,7 @@ Response Body (2xx)
 ```
 
 Response Body (4xx)
+
 ```json
 {
   "message": "error message"

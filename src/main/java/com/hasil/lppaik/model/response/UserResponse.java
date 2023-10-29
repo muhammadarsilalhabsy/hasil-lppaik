@@ -1,5 +1,7 @@
 package com.hasil.lppaik.model.response;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.hasil.lppaik.entity.Gender;
 import com.hasil.lppaik.entity.Major;
 import com.hasil.lppaik.entity.Role;

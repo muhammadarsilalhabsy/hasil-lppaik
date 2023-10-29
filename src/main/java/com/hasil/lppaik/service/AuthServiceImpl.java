@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
       return LoginResponse.builder()
               .token(user.getToken())
               .tokenExpiredAt(user.getTokenExpiredAt())
-              .userResponse(utils.getUserResponse(user))
+              .user(utils.getUserResponse(user))
               .build();
     }else{
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You send wrong password!");

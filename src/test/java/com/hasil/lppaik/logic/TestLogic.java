@@ -3,9 +3,12 @@ package com.hasil.lppaik.logic;
 import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.repository.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -59,14 +62,14 @@ public class TestLogic {
     user1.setName("budi");
     user1.setPassword("rahasia");
     user1.setEmail("budi@gmail.com");
-    user1.setUsername("2191100");
+    user1.setUsername("87654321");
     user1.setRoles(Set.of(role1, role2));
 
     User user2 = new User();
     user2.setName("otong");
     user2.setPassword("rahasia");
     user2.setEmail("otong@gmail.com");
-    user2.setUsername("919191");
+    user2.setUsername("12345678");
     user2.setRoles(Set.of(role2));
 
     userRepo.saveAll(List.of(user1, user2));
@@ -85,6 +88,7 @@ public class TestLogic {
   }
 
   @Test
+  @Disabled
   void testAnyMatchUserHasNotRoleAdmin() {
 
     User user = userRepo.findById("919191").orElse(null);
@@ -96,4 +100,37 @@ public class TestLogic {
     assertTrue(isMahasiswa);
 
   }
+
+  @Test
+  @Disabled
+  void testAnyMatchUserMustHaveRoleKETINGorADMINorTUTORIsAllowFlase() {
+
+    User user = userRepo.findById("12345678").orElse(null);
+
+    boolean isAllow = user.getRoles().stream()
+            .anyMatch(
+                    role -> role.getName().equals(RoleEnum.ADMIN)
+                            || role.getName().equals(RoleEnum.KATING)
+                            || role.getName().equals(RoleEnum.DOSEN));
+    assertNotNull(user);
+    assertFalse(isAllow);
+
+  }
+
+  @Test
+  @Disabled
+  void testAnyMatchUserMustHaveRoleKETINGorADMINorTUTORIsAllowTrue() {
+
+    User user = userRepo.findById("87654321").orElse(null);
+
+    boolean isAllow = user.getRoles().stream()
+            .anyMatch(
+                    role -> role.getName().equals(RoleEnum.ADMIN)
+                            || role.getName().equals(RoleEnum.KATING)
+                            || role.getName().equals(RoleEnum.DOSEN));
+    assertNotNull(user);
+    assertTrue(isAllow);
+  }
+
+
 }

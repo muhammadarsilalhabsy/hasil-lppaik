@@ -1,5 +1,6 @@
 package com.hasil.lppaik.model.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class LoginResponse {
 
   private Long tokenExpiredAt;
 
-  private UserResponse userResponse;
+//  @JsonProperty(value = "user")
+  private UserResponse user;
 
 }

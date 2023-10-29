@@ -5,6 +5,7 @@ import com.hasil.lppaik.entity.Major;
 import com.hasil.lppaik.entity.Role;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
+import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.security.BCrypt;
@@ -62,6 +63,16 @@ public class Utils {
     return user;
   }
 
+  public SimpleUserResponse userToSimpleUser(User user){
+    return SimpleUserResponse.builder()
+            .username(user.getUsername())
+            .email(user.getEmail())
+            .avatar(user.getAvatar())
+            .name(user.getName())
+            .major(user.getMajor().getName())
+            .completed(user.getCompleted())
+            .build();
+  }
   public UserResponse getUserResponse(User user){
     return UserResponse.builder()
             .username(user.getUsername())

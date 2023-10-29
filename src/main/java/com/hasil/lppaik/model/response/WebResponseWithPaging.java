@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CertificateResponse {
+public class WebResponseWithPaging<T> {
 
-  private String certificate;
+  private T data;
 
-  private SimpleUserResponse user;
+  private String message;
 
+  private PagingResponse pagination;
 }

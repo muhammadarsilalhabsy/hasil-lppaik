@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Integer> {
 
-  Optional<Image> findByPath(String name);
+  Optional<Image> findByPath(String path);
+  void deleteByPath(String path);
 }

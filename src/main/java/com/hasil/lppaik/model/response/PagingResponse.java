@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CertificateResponse {
+public class PagingResponse {
 
-  private String certificate;
+  private Integer page; // current page
+  private Integer totalItems; // banyak items
+  private Integer pageSize; // limit nya berapa
 
-  private SimpleUserResponse user;
+  private Integer size; // limit nya berapa
+
 
 }
