@@ -46,9 +46,10 @@ public class ImageServiceImpl implements ImageService {
   @Override
   @Transactional(readOnly = true)
   public byte[] getImageFromDb(String name) {
-    Optional<Image> image = repository.findByPath(name);
+    Image image = repository.findByPath(name)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Image not found"));
 
-    return Utils.decompressImage(image.get().getData());
+    return Utils.decompressImage(image.getData());
   }
 
   @Override

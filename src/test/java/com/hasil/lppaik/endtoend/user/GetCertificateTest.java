@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.response.CertificateResponse;
+import com.hasil.lppaik.model.response.ErrorResponse;
 import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.repository.CertificateRepository;
 import com.hasil.lppaik.repository.MajorRepository;
@@ -56,5 +57,29 @@ public class GetCertificateTest extends AbstractUserTest{
       assertEquals(response.getData().getUser().getUsername(), user.getUsername());
     });
       assertNotNull(user);
+  }
+
+  @Test
+  void testGetCertificateWithIdNotFound() throws Exception {
+
+    String certificate = "salah";
+
+    mvc.perform(
+            get(BASE_CERTIFICATE_URL)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .queryParam("id", certificate)
+    ).andExpectAll(
+            status().isNotFound()
+    ).andExpectAll(result -> {
+      ErrorResponse response = mapper.readValue(result.getResponse().getContentAsString(),
+              new TypeReference<>() {
+              });
+
+      assertNotNull(response);
+      assertEquals("Certificate is NOT FOUND!", response.getMessage());
+
+    });
+
   }
 }
