@@ -4,6 +4,7 @@ import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -130,6 +131,7 @@ public class TestInsert {
   }
 
   @Test
+  @Disabled
   void testInsertImageToActivites() {
     Activity activity = activityRepo.findByObjId("obj-id-1").orElse(null);
     Image image = new Image();

@@ -1,4 +1,5 @@
-package com.hasil.lppaik.endtoend.user;
+package com.hasil.lppaik.endtoend;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hasil.lppaik.entity.*;
 
@@ -23,24 +24,27 @@ import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public abstract class AbstractUserTest {
+public abstract class AbstractSetupEndToEndTest {
 
-  protected final String BASE_USERS_URL = "/api/v1/users";
+  // urls
+  public final String BASE_URL_REGISTER = "/api/v1/auth/register";
+  public final String BASE_URL_LOGIN = "/api/v1/auth/login";
+  public final String BASE_URL_LOGOUT = "/api/v1/auth/logout";
+  public final String BASE_USERS_URL = "/api/v1/users";
   protected final String BASE_CERTIFICATE_URL = "/api/v1/certificate";
-  protected final ObjectMapper mapper;
+  protected final String BASE_MAJOR_URL = "/api/v1/majors";
+  public final ObjectMapper mapper;
 
-  protected final MockMvc mvc;
+  public final MockMvc mvc;
 
-  protected final UserRepository userRepository;
+  public final UserRepository userRepository;
+  public final MajorRepository majorRepository;
 
-  protected final MajorRepository majorRepository;
-
-  protected final RoleRepository roleRepository;
-
+  public final RoleRepository roleRepository;
   protected final CertificateRepository certificateRepository;
 
   @Autowired
-  public AbstractUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
+  public AbstractSetupEndToEndTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
     this.mapper = mapper;
     this.mvc = mvc;
     this.userRepository = userRepository;
@@ -53,12 +57,22 @@ public abstract class AbstractUserTest {
   void setUp() {
     certificateRepository.deleteAll();
     userRepository.deleteAll();
+
+    // cari semua rolenya
     roleRepository.findAll()
-            .forEach(role -> {
+            .forEach(role -> { // loopin setiap rolenya
+
+              // ambil role dari usernya, lalu remove role dari usernya
               role.getUsers().forEach(u -> u.getRoles().remove(role));
+
+              // setelah itu save user yang sudah di remove rolenya
               userRepository.saveAll(role.getUsers());
+
+              // remove role yang sudah tidak di gunakan.
               roleRepository.delete(role);
             });
+
+    // make sure rolenya sudah di delete semua
     roleRepository.deleteAll();
     majorRepository.deleteAll();
 
@@ -115,6 +129,7 @@ public abstract class AbstractUserTest {
     user2.setRoles(Set.of(mhs));
     user2.setMajor(lawyer);
     user2.setToken("token-mhs");
+    userRepository.saveAll(List.of(user1, user2));
 
     User user3 = new User();
     user3.setGender(Gender.MALE);
@@ -135,7 +150,6 @@ public abstract class AbstractUserTest {
     user4.setRoles(Set.of(tutor));
     user4.setMajor(lawyer);
     user4.setToken("token-tutor");
-
 
     User user5 = new User();
     user5.setGender(Gender.MALE);
@@ -175,6 +189,5 @@ public abstract class AbstractUserTest {
       users.add(uLoop);
     }
     userRepository.saveAll(users);
-
   }
 }

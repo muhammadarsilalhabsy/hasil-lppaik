@@ -2,6 +2,7 @@ package com.hasil.lppaik.endtoend.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.response.CertificateResponse;
 import com.hasil.lppaik.model.response.ErrorResponse;
@@ -20,12 +21,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.MockMvcBuilder.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class GetCertificateTest extends AbstractUserTest{
+public class GetCertificateTest extends AbstractSetupEndToEndTest {
 
   @Autowired
   public GetCertificateTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {

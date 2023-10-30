@@ -48,7 +48,7 @@ Response Body (4xx)
 
 Method : PATCH
 
-URL: /:id
+URL: /{id}
 
 Request Header :
 

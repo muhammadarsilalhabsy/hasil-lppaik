@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.entity.Certificate;
 import com.hasil.lppaik.entity.RoleEnum;
 import com.hasil.lppaik.entity.User;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UpdateUserTest extends AbstractUserTest {
+public class UpdateUserTest extends AbstractSetupEndToEndTest {
 
   @Autowired
   public UpdateUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {

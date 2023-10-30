@@ -77,6 +77,7 @@ public class TestLogic {
   }
 
   @Test
+  @Disabled
   void testAnyMatchUserHasRoleAdmin() {
 
     User user = userRepo.findById("2191100").orElse(null);

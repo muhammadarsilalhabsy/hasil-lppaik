@@ -2,6 +2,7 @@ package com.hasil.lppaik.endtoend.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.entity.Gender;
 import com.hasil.lppaik.entity.Major;
 import com.hasil.lppaik.entity.User;
@@ -31,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class SearchUserTest extends AbstractUserTest{
+public class SearchUserTest extends AbstractSetupEndToEndTest {
 
   @Autowired
   public SearchUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {

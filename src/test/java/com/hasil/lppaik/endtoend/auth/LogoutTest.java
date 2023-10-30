@@ -2,10 +2,12 @@ package com.hasil.lppaik.endtoend.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.LoginRequest;
 import com.hasil.lppaik.model.response.LoginResponse;
 import com.hasil.lppaik.model.response.WebResponse;
+import com.hasil.lppaik.repository.CertificateRepository;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.repository.UserRepository;
@@ -22,12 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class LogoutTest extends AbstractAuthControllerTest{
+public class LogoutTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public LogoutTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository);
+  public LogoutTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
   }
+
+
 
   @Test
   void testLoginSuccess() throws Exception {

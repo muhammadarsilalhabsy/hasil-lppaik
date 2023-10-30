@@ -3,9 +3,11 @@ package com.hasil.lppaik.endtoend.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.model.request.LoginRequest;
 import com.hasil.lppaik.model.response.ErrorResponse;
 import com.hasil.lppaik.model.response.LoginResponse;
+import com.hasil.lppaik.repository.CertificateRepository;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.repository.UserRepository;
@@ -22,11 +24,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class LoginTest extends AbstractAuthControllerTest {
+public class LoginTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public LoginTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository);
+  public LoginTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
   }
 
   @Test
