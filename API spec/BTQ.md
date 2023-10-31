@@ -84,7 +84,7 @@ Response Body (4xx)
 
 Method : POST
 
-URL: /{id}
+URL: /{username}
 
 Request Header :
 
@@ -96,7 +96,7 @@ Request Body
 {
   "lesson": "simple lesson",
   "description": "simple description",
-  "data": "2020-10-10"
+  "date": "2020-10-10"
 }
 ```
 

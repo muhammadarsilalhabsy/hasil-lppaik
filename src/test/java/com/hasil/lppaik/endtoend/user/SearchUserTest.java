@@ -9,10 +9,7 @@ import com.hasil.lppaik.entity.User;
 
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.model.response.WebResponseWithPaging;
-import com.hasil.lppaik.repository.CertificateRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
 import com.hasil.lppaik.security.BCrypt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SearchUserTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public SearchUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
+  public SearchUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
 

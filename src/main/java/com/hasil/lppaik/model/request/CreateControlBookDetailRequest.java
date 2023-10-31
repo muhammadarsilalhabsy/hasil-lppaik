@@ -1,8 +1,6 @@
 package com.hasil.lppaik.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.hasil.lppaik.entity.RoleEnum;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,20 +9,25 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateUserPasswordRequest {
-
-
-  @NotNull
-  @Size(min = 5, max = 255, message = "minimum is {min} - {max} character")
-  private String newPassword;
+public class CreateControlBookDetailRequest {
 
   @NotNull
-  private String confirmNewPassword;
+  @Size(min = 5, max = 255, message = "length must be between {min} - {max} characters")
+  private String lesson;
+
+  @NotNull
+  @Size(min = 5,  message = "length must at least {min} characters")
+  private String description;
+
+  private LocalDate date;
+
+  @JsonIgnore
+  private String username;
 
 }

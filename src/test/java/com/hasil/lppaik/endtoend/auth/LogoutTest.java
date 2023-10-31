@@ -4,13 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hasil.lppaik.endtoend.AbstractSetupEndToEndTest;
 import com.hasil.lppaik.entity.User;
-import com.hasil.lppaik.model.request.LoginRequest;
-import com.hasil.lppaik.model.response.LoginResponse;
 import com.hasil.lppaik.model.response.WebResponse;
-import com.hasil.lppaik.repository.CertificateRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LogoutTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public LogoutTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
+  public LogoutTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
 

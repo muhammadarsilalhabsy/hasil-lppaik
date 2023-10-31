@@ -7,10 +7,8 @@ import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
 import com.hasil.lppaik.model.response.ErrorResponse;
 import com.hasil.lppaik.model.response.WebResponse;
-import com.hasil.lppaik.repository.CertificateRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -34,8 +32,8 @@ public class RegisterTest extends AbstractSetupEndToEndTest {
 
 
   @Autowired
-  public RegisterTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
+  public RegisterTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
   @Test

@@ -3,10 +3,7 @@ package com.hasil.lppaik.endtoend;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hasil.lppaik.entity.*;
 
-import com.hasil.lppaik.repository.CertificateRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
 
 
 import com.hasil.lppaik.security.BCrypt;
@@ -33,6 +30,7 @@ public abstract class AbstractSetupEndToEndTest {
   public final String BASE_USERS_URL = "/api/v1/users";
   protected final String BASE_CERTIFICATE_URL = "/api/v1/certificate";
   protected final String BASE_MAJOR_URL = "/api/v1/majors";
+  protected final String BASE_CBD_URL = "/api/v1/control-book";
   public final ObjectMapper mapper;
 
   public final MockMvc mvc;
@@ -41,20 +39,24 @@ public abstract class AbstractSetupEndToEndTest {
   public final MajorRepository majorRepository;
 
   public final RoleRepository roleRepository;
-  protected final CertificateRepository certificateRepository;
+  public final CertificateRepository certificateRepository;
+
+  public final ControlBookDetailRepository controlBookDetailRepository;
 
   @Autowired
-  public AbstractSetupEndToEndTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
+  public AbstractSetupEndToEndTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
     this.mapper = mapper;
     this.mvc = mvc;
     this.userRepository = userRepository;
     this.majorRepository = majorRepository;
     this.roleRepository = roleRepository;
     this.certificateRepository = certificateRepository;
+    this.controlBookDetailRepository = controlBookDetailRepository;
   }
 
   @BeforeEach
   void setUp() {
+    controlBookDetailRepository.deleteAll();
     certificateRepository.deleteAll();
     userRepository.deleteAll();
 

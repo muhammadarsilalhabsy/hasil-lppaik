@@ -11,10 +11,7 @@ import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.UpdateUserPasswordRequest;
 import com.hasil.lppaik.model.request.UpdateUserRequest;
 import com.hasil.lppaik.model.response.ErrorResponse;
-import com.hasil.lppaik.repository.CertificateRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
 import com.hasil.lppaik.security.BCrypt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +32,8 @@ import java.util.Set;
 public class UpdateUserTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public UpdateUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository);
+  public UpdateUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
   @Test

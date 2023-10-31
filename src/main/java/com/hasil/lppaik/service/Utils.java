@@ -1,10 +1,12 @@
 package com.hasil.lppaik.service;
 
 
+import com.hasil.lppaik.entity.ControlBookDetail;
 import com.hasil.lppaik.entity.Major;
 import com.hasil.lppaik.entity.Role;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
+import com.hasil.lppaik.model.response.ControlBookDetailResponse;
 import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.repository.MajorRepository;
@@ -41,6 +43,15 @@ public class Utils {
     this.majorRepository = majorRepository;
   }
 
+  public ControlBookDetailResponse cbdToCbdResponse(ControlBookDetail detail){
+    return ControlBookDetailResponse.builder()
+            .id(detail.getId())
+            .date(detail.getDate())
+            .lesson(detail.getLesson())
+            .tutor(detail.getTutor().getName())
+            .description(detail.getDescription())
+            .build();
+  }
   public void validate(Object request){
     Set<ConstraintViolation<Object>> constraintViolations = validator.validate(request);
     if (constraintViolations.size() != 0){

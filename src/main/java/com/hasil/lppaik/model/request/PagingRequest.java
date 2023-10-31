@@ -1,5 +1,6 @@
 package com.hasil.lppaik.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,15 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchUserRequest{
-
-  private String identity;
-
-  private String major;
+public class PagingRequest {
 
   @NotNull
   private Integer page;
 
   @NotNull
   private Integer size;
+
+  @JsonIgnore
+  private String username;
 }
