@@ -17,6 +17,7 @@ public class ActivityImage {
   @Id
   private String id;
 
+  @Lob
   private String image;
 
   @ManyToOne

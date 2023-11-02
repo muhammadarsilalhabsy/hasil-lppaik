@@ -5,6 +5,7 @@ import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
 import com.hasil.lppaik.model.response.*;
 import com.hasil.lppaik.repository.MajorRepository;
+import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.security.BCrypt;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -33,10 +34,14 @@ public class Utils {
   private final Validator validator;
 
   private final MajorRepository majorRepository;
+  private final RoleRepository roleRepository;
+
   @Autowired
-  public Utils(Validator validator, MajorRepository majorRepository) {
+  public Utils(Validator validator, MajorRepository majorRepository,
+               RoleRepository roleRepository) {
     this.validator = validator;
     this.majorRepository = majorRepository;
+    this.roleRepository = roleRepository;
   }
 
   public static PagingResponse getPagingResponse(Page<?> page){
@@ -100,25 +105,32 @@ public class Utils {
               new ResponseStatusException(HttpStatus.NOT_FOUND, "Major is not found")
             );
 
-      User user = new User();
-      user.setUsername(request.getUsername());
-      user.setName(request.getName());
-      user.setPassword(BCrypt.hashpw(request.getUsername(), BCrypt.gensalt()));
-      user.setEmail(request.getEmail());
-      user.setMajor(major);
-      user.setGender(request.getGender());
+    Role role = roleRepository.findByName(RoleEnum.MAHASISWA).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Role is not found")
+    );
+
+    User user = new User();
+    user.setUsername(request.getUsername());
+    user.setName(request.getName());
+    user.setPassword(BCrypt.hashpw(request.getUsername(), BCrypt.gensalt()));
+    user.setEmail(request.getEmail());
+    user.setMajor(major);
+    user.setGender(request.getGender());
+    user.getRoles().add(role);
     return user;
   }
 
   public SimpleUserResponse userToSimpleUser(User user){
-    return SimpleUserResponse.builder()
-            .username(user.getUsername())
-            .email(user.getEmail())
-            .avatar(user.getAvatar())
-            .name(user.getName())
-            .major(user.getMajor().getName())
-            .completed(user.getCompleted())
-            .build();
+    SimpleUserResponse response = new SimpleUserResponse();
+    response.setName(user.getName());
+    response.setEmail(user.getEmail());
+    response.setAvatar(user.getAvatar());
+    response.setUsername(user.getUsername());
+    response.setCompleted(user.getCompleted());
+    if(Objects.nonNull(user.getMajor())){
+      response.setMajor(user.getMajor().getName());
+    }
+    return response;
   }
   public UserResponse getUserResponse(User user){
     return UserResponse.builder()

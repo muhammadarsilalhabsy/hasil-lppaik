@@ -31,7 +31,7 @@ public class UserController {
   }
 
   // GET USER CURRENT CERTIFICATE (WITH PDF)
-  @GetMapping(path = "/control-book/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(path = "/certificate/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponse<String> getCertificate(User user){
     return null;
   }
@@ -76,6 +76,7 @@ public class UserController {
             .pagination(Utils.getPagingResponse(pages))
             .build();
   }
+
   // GET OTHER USER ACTIVITIES [ADMIN, DOSEN, KATING]
   @GetMapping(path = "/activities/{username}",
           produces = MediaType.APPLICATION_JSON_VALUE)
@@ -95,7 +96,7 @@ public class UserController {
     return WebResponseWithPaging.<List<SimpleActivityResponse>>builder()
             .data(pages.getContent())
             .pagination(Utils.getPagingResponse(pages))
-            .message("Success get current activities")
+            .message("Success get other activities")
             .build();
   }
 
