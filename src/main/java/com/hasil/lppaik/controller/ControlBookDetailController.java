@@ -10,6 +10,7 @@ import com.hasil.lppaik.model.response.PagingResponse;
 import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.model.response.WebResponseWithPaging;
 import com.hasil.lppaik.service.ControlBookDetailServiceImpl;
+import com.hasil.lppaik.service.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -28,55 +29,17 @@ public class ControlBookDetailController {
     this.cbdService = cbdService;
   }
 
-  // get other user list of control book (using paging) [ADMIN, TUTOR, DOSEN]
-  @GetMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponseWithPaging<List<ControlBookDetailResponse>> getOtherUserCBDDetail(User user,
-                                                                                        @PathVariable("username") String username,
-                                                                                        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-                                                                                        @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+  // GET CBD DETAIL WITH ID
+  @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<ControlBookDetailResponse> getCbdDetailWithId(@PathVariable("id") String id){
 
-    PagingRequest request = PagingRequest.builder()
-            .page(page).size(size)
-            .username(username)
-            .build();
-
-    Page<ControlBookDetailResponse> detailResponse = cbdService.getOtherUserCBD(user, request);
-
-    return WebResponseWithPaging.<List<ControlBookDetailResponse>>builder()
-            .data(detailResponse.getContent())
-            .message("Success get all btq details user with id " + username)
-            .pagination(PagingResponse.builder()
-                    .page(detailResponse.getNumber()) // current page
-                    .totalItems(detailResponse.getContent().size()) // get total items
-                    .pageSize(detailResponse.getTotalPages()) // total page keseluruhan
-                    .size(detailResponse.getSize()) // limitnya
-                    .build())
+    ControlBookDetailResponse response = cbdService.getCbdDetailWithId(id);
+    return WebResponse.<ControlBookDetailResponse>builder()
+            .data(response)
+            .message("success get detail control book with id " + id)
             .build();
   }
 
-  // get current list of control book (using paging)
-  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponseWithPaging<List<ControlBookDetailResponse>> getCurrentUserCBDDetail(User user,
-                                                                          @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-                                                                          @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
-
-
-    PagingRequest request = PagingRequest.builder().page(page).size(size).build();
-
-    Page<ControlBookDetailResponse> detailResponse = cbdService.getCurrentCBD(user, request);
-
-
-    return WebResponseWithPaging.<List<ControlBookDetailResponse>>builder()
-            .data(detailResponse.getContent())
-            .message("Success get all btq details")
-            .pagination(PagingResponse.builder()
-                    .page(detailResponse.getNumber()) // current page
-                    .totalItems(detailResponse.getContent().size()) // get total items
-                    .pageSize(detailResponse.getTotalPages()) // total page keseluruhan
-                    .size(detailResponse.getSize()) // limitnya
-                    .build())
-            .build();
-  }
   // delete other user control book detail [ADMIN, TUTOR]
   @DeleteMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponse<String> deleteCBD(User user, @PathVariable String id){

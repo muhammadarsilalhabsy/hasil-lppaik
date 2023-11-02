@@ -7,8 +7,7 @@ import com.hasil.lppaik.entity.Gender;
 import com.hasil.lppaik.entity.Major;
 import com.hasil.lppaik.entity.User;
 
-import com.hasil.lppaik.model.response.UserResponse;
-import com.hasil.lppaik.model.response.WebResponseWithPaging;
+import com.hasil.lppaik.model.response.*;
 import com.hasil.lppaik.repository.*;
 import com.hasil.lppaik.security.BCrypt;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,27 @@ public class SearchUserTest extends AbstractSetupEndToEndTest {
   }
 
 
+  @Test
+  void testGetSimpleUser() throws Exception {
+    User user = userRepository.findById("87654321").orElse(null);
 
+    mvc.perform(
+            get(BASE_USERS_URL + "/" + user.getUsername())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+    ).andExpectAll(
+            status().isOk()
+    ).andExpectAll(result -> {
+      WebResponse<SimpleUserResponse> response = mapper.readValue(result.getResponse().getContentAsString(),
+              new TypeReference<>() {
+              });
+
+      assertEquals(user.getUsername(), response.getData().getUsername());
+      assertEquals("Success get user with id " + user.getUsername(), response.getMessage());
+      assertNotNull(response);
+    });
+    assertNotNull(user);
+  }
   @Test
   void testSearchWithoutAnyReqParam() throws Exception {
     User user = userRepository.findById("12345678").orElse(null);

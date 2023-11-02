@@ -10,6 +10,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,15 @@ public class Utils {
   public Utils(Validator validator, MajorRepository majorRepository) {
     this.validator = validator;
     this.majorRepository = majorRepository;
+  }
+
+  public static PagingResponse getPagingResponse(Page<?> page){
+    return PagingResponse.builder()
+            .page(page.getNumber()) // current page
+            .totalItems(page.getContent().size()) // get total items
+            .pageSize(page.getTotalPages()) // total page keseluruhan
+            .size(page.getSize())
+            .build();
   }
 
   public SimpleActivityResponse activityToSimpleActivityResponse(Activity activity){

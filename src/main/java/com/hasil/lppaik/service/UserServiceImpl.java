@@ -4,6 +4,7 @@ import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.*;
 import com.hasil.lppaik.model.response.ControlBookDetailResponse;
 import com.hasil.lppaik.model.response.SimpleActivityResponse;
+import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.repository.ActivityRepository;
 import com.hasil.lppaik.repository.RoleRepository;
@@ -51,6 +52,42 @@ public class UserServiceImpl implements UserService {
     this.activityRepository = activityRepository;
   }
 
+  @Override
+  public SimpleUserResponse getUserById(String username) {
+    User user = userRepository.findById(username)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
+
+    return utils.userToSimpleUser(user);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<SimpleActivityResponse> getOtherUserActivities(User user, PagingRequest request) {
+
+    boolean isAllow = user.getRoles().stream()
+            .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
+                    || role.getName().equals(RoleEnum.DOSEN)
+                    || role.getName().equals(RoleEnum.KATING));
+
+    if(!isAllow){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    Specification<Activity> specification = (root, query, builder) -> {
+
+      Join<Activity, User> current = root.join("users");
+
+      return query.where(builder.equal(current.get("username"), request.getUsername())).getRestriction();
+
+    };
+
+    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Page<Activity> activities = activityRepository.findAll(specification, pageable);
+    List<SimpleActivityResponse> response = activities.getContent().stream()
+            .map(utils::activityToSimpleActivityResponse).collect(Collectors.toList());
+
+    return new PageImpl<>(response, pageable, activities.getTotalElements());
+  }
 
   @Override
   @Transactional(readOnly = true)

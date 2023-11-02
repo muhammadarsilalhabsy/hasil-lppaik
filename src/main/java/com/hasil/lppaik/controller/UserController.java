@@ -4,7 +4,9 @@ package com.hasil.lppaik.controller;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.*;
 import com.hasil.lppaik.model.response.*;
+import com.hasil.lppaik.service.ControlBookDetailServiceImpl;
 import com.hasil.lppaik.service.UserServiceImpl;
+import com.hasil.lppaik.service.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -20,14 +22,93 @@ public class UserController {
 
   private final UserServiceImpl userService;
 
+  private final ControlBookDetailServiceImpl cbdService;
+
   @Autowired
-  public UserController(UserServiceImpl userService) {
+  public UserController(UserServiceImpl userService, ControlBookDetailServiceImpl cbdService) {
     this.userService = userService;
+    this.cbdService = cbdService;
   }
 
-  // GET SIMPLE USER BY ID [ADMIN, DOSEN]
+  // GET USER CURRENT CERTIFICATE (WITH PDF)
+  @GetMapping(path = "/control-book/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> getCertificate(User user){
+    return null;
+  }
 
-  // GET OTHER USER ACTIVITIES [ADMIN, DOSEN]
+  // GET OTHER USER CBD LIST [ADMIN, TUTOR, DOSEN]
+  @GetMapping(path = "/control-book/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponseWithPaging<List<ControlBookDetailResponse>> getOtherUserCBDDetail(User user,
+                                                                                      @PathVariable("username") String username,
+                                                                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                      @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+
+    PagingRequest request = PagingRequest.builder()
+            .page(page).size(size)
+            .username(username)
+            .build();
+
+    Page<ControlBookDetailResponse> pages = cbdService.getOtherUserCBD(user, request);
+
+    return WebResponseWithPaging.<List<ControlBookDetailResponse>>builder()
+            .data(pages.getContent())
+            .message("Success get all btq details user with id " + username)
+            .pagination(Utils.getPagingResponse(pages))
+            .build();
+  }
+
+
+  // GET USER CURRENT CBD LIST [CURRENT USER ONLY]
+  @GetMapping(path = "/control-book", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponseWithPaging<List<ControlBookDetailResponse>> getCurrentUserCBDDetail(User user,
+                                                                                        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                        @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+
+
+    PagingRequest request = PagingRequest.builder().page(page).size(size).build();
+
+    Page<ControlBookDetailResponse> pages = cbdService.getCurrentCBD(user, request);
+
+
+    return WebResponseWithPaging.<List<ControlBookDetailResponse>>builder()
+            .data(pages.getContent())
+            .message("Success get all btq details")
+            .pagination(Utils.getPagingResponse(pages))
+            .build();
+  }
+  // GET OTHER USER ACTIVITIES [ADMIN, DOSEN, KATING]
+  @GetMapping(path = "/activities/{username}",
+          produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponseWithPaging<List<SimpleActivityResponse>> getOtherUserActivities(User user,
+                                                                                      @PathVariable("username") String username,
+                                                                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                      @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
+
+    PagingRequest request = new PagingRequest();
+    request.setPage(page);
+    request.setSize(size);
+    request.setUsername(username);
+
+    Page<SimpleActivityResponse> pages = userService.getOtherUserActivities(user, request);
+
+
+    return WebResponseWithPaging.<List<SimpleActivityResponse>>builder()
+            .data(pages.getContent())
+            .pagination(Utils.getPagingResponse(pages))
+            .message("Success get current activities")
+            .build();
+  }
+
+  // GET SIMPLE USER BY ID [ALL ROLES]
+  @GetMapping(path="/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<SimpleUserResponse> getUserById(@PathVariable("username") String username){
+
+    SimpleUserResponse response = userService.getUserById(username);
+    return WebResponse.<SimpleUserResponse>builder()
+            .data(response)
+            .message("Success get user with id " + username)
+            .build();
+  }
 
   // GET CURRENT USER ACTIVITIES [CURRENT USER ONLY]
   @GetMapping(path = "/activities",
@@ -40,17 +121,12 @@ public class UserController {
     request.setPage(page);
     request.setSize(size);
 
-    Page<SimpleActivityResponse> userCurrentActivities = userService.getUserCurrentActivities(user, request);
+    Page<SimpleActivityResponse> pages = userService.getUserCurrentActivities(user, request);
 
 
     return WebResponseWithPaging.<List<SimpleActivityResponse>>builder()
-            .data(userCurrentActivities.getContent())
-            .pagination(PagingResponse.builder()
-                    .page(userCurrentActivities.getNumber())
-                    .totalItems(userCurrentActivities.getContent().size())
-                    .pageSize(userCurrentActivities.getTotalPages())
-                    .size(userCurrentActivities.getSize())
-                    .build())
+            .data(pages.getContent())
+            .pagination(Utils.getPagingResponse(pages))
             .message("Success get current activities")
             .build();
   }
@@ -70,17 +146,12 @@ public class UserController {
             .page(page)
             .build();
 
-    Page<UserResponse> userResponses = userService.searchUser(user, request);
+    Page<UserResponse> pages = userService.searchUser(user, request);
 
     return WebResponseWithPaging.<List<UserResponse>>builder()
-            .data(userResponses.getContent())
+            .data(pages.getContent())
             .message("Search Success")
-            .pagination(PagingResponse.builder()
-                    .page(userResponses.getNumber()) // current page
-                    .totalItems(userResponses.getContent().size()) // get total items
-                    .pageSize(userResponses.getTotalPages()) // total page keseluruhan
-                    .size(userResponses.getSize()) // limitnya
-                    .build())
+            .pagination(Utils.getPagingResponse(pages))
             .build();
   }
 

@@ -33,6 +33,46 @@ public class GetActivityTest extends AbstractSetupEndToEndTest {
     super(mapper, mvc, activityImageRepository, activityRepository, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
+  @Test
+  void testGetOtherUserActivitiesSuccess() throws Exception {
+    User admin = userRepository.findById("12345678").orElse(null);
+    User user = userRepository.findById("87654321").orElse(null);
+
+    Activity first = activityRepository.findById("test-get-activity").orElse(null);
+    Activity second = activityRepository.findById("activity11").orElse(null);
+
+    user.getActivities().add(first);
+    user.getActivities().add(second);
+
+    userRepository.save(user);
+
+    mvc.perform(
+            get(BASE_USERS_URL + "/activities/" + user.getUsername())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("X-API-TOKEN", admin.getToken())
+    ).andExpectAll(
+            status().isOk()
+    ).andExpectAll(result -> {
+      WebResponseWithPaging<List<SimpleActivityResponse>> response = mapper.readValue(result.getResponse().getContentAsString(),
+              new TypeReference<>() {
+              });
+
+      assertEquals(2, response.getPagination().getTotalItems());
+      assertEquals(0, response.getPagination().getPage());
+      assertEquals(1, response.getPagination().getPageSize());
+      assertEquals(10, response.getPagination().getSize());
+
+      System.out.println(response.getData());
+      System.out.println(response.getPagination());
+
+      assertNotNull(response);
+    });
+    assertNotNull(user);
+    assertNotNull(admin);
+    assertNotNull(first);
+    assertNotNull(second);
+  }
 
   @Test
   void testGetUserCurrentActivitiesSuccess() throws Exception {
@@ -74,7 +114,6 @@ public class GetActivityTest extends AbstractSetupEndToEndTest {
   @Test
   void testGetUserCurrentActivities() throws Exception {
     User user = userRepository.findById("87654321").orElse(null);
-    Activity first = activityRepository.findById("test-get-activity").orElse(null);
 
 
     mvc.perform(
@@ -100,7 +139,6 @@ public class GetActivityTest extends AbstractSetupEndToEndTest {
       assertNotNull(response);
     });
     assertNotNull(user);
-    assertNotNull(first);
   }
 
 }

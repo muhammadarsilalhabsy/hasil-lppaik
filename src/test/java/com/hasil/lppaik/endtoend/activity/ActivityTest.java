@@ -43,7 +43,6 @@ public class ActivityTest extends AbstractSetupEndToEndTest {
   }
 
   @Test
-  @Disabled
   void testGetListActivitySuccess() throws Exception {
 
     mvc.perform(

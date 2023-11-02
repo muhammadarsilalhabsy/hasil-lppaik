@@ -40,222 +40,33 @@ public class CBDTest extends AbstractSetupEndToEndTest {
   }
 
   @Test
-  void testGetOtherCBDSuccess() throws Exception {
-    User admin = userRepository.findById("12345678").orElse(null);
+  void testGetCBDDetail() throws Exception {
+    String cbdId = "cbd-detail-1";
+    User tutor = userRepository.findById("12345678").orElse(null);
     User user = userRepository.findById("87654321").orElse(null);
-    User kating = userRepository.findById("99122211").orElse(null);
 
-    for (int i = 1; i <= 22; i++) {
-      ControlBookDetail cbd = new ControlBookDetail();
-      cbd.setId(UUID.randomUUID().toString());
-      cbd.setTutor(admin);
-      if(i < 10){
-        cbd.setDate(LocalDate.parse("2023-10-0"+i));
-      }else {
-        cbd.setDate(LocalDate.parse("2023-10-"+i));
-      }
-      cbd.setLesson("Lesson btq " + i);
-      if(i % 2 == 0){
-        cbd.setUser(user);
-      }else{
-        cbd.setUser(kating);
-      }
-      controlBookDetailRepository.save(cbd);
-    }
+    ControlBookDetail cbd = new ControlBookDetail();
+    cbd.setLesson("test cbd belajar");
+    cbd.setId(cbdId);
+    cbd.setTutor(tutor);
+    cbd.setUser(user);
+    cbd.setDescription("simple cbd desc test");
+    controlBookDetailRepository.save(cbd);
 
     mvc.perform(
-            get(BASE_CBD_URL + "/" + kating.getUsername())
+            get(BASE_CBD_URL + "/" + cbdId)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("X-API-TOKEN", admin.getToken())
-                    .queryParam("page","1")
     ).andExpectAll(
             status().isOk()
     ).andExpectAll(result -> {
-      WebResponseWithPaging<List<ControlBookDetailResponse>> response = mapper.readValue(result.getResponse().getContentAsString(),
+      WebResponse<ControlBookDetailResponse> response = mapper.readValue(result.getResponse().getContentAsString(),
               new TypeReference<>() {
               });
-
+      assertEquals("success get detail control book with id " + cbdId, response.getMessage());
+      assertEquals("test cbd belajar", response.getData().getLesson());
       assertNotNull(response);
-      System.out.println(response.getData());
-      System.out.println(response.getPagination());
-      assertEquals(1,response.getData().size());
-      assertEquals(10,response.getPagination().getSize());
-      assertEquals(1,response.getPagination().getPage());
-      assertEquals(2,response.getPagination().getPageSize());
-      assertEquals(1,response.getPagination().getTotalItems());
-      assertEquals("Success get all btq details user with id " + kating.getUsername(), response.getMessage());
     });
-    assertNotNull(user);
-    assertNotNull(admin);
-    assertNotNull(kating);
-  }
-
-  @Test
-  void testGetOtherCBDUnauthorized() throws Exception {
-    User admin = userRepository.findById("12345678").orElse(null);
-    User user = userRepository.findById("87654321").orElse(null);
-    User kating = userRepository.findById("99122211").orElse(null);
-
-    for (int i = 1; i <= 22; i++) {
-      ControlBookDetail cbd = new ControlBookDetail();
-      cbd.setId(UUID.randomUUID().toString());
-      cbd.setTutor(admin);
-      if(i < 10){
-        cbd.setDate(LocalDate.parse("2023-10-0"+i));
-      }else {
-        cbd.setDate(LocalDate.parse("2023-10-"+i));
-      }
-      cbd.setLesson("Lesson btq " + i);
-      if(i % 2 == 0){
-        cbd.setUser(user);
-      }else{
-        cbd.setUser(kating);
-      }
-      controlBookDetailRepository.save(cbd);
-    }
-
-    mvc.perform(
-            get(BASE_CBD_URL + "/" + kating.getUsername())
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-    ).andExpectAll(
-            status().isUnauthorized()
-    ).andExpectAll(result -> {
-      ErrorResponse response = mapper.readValue(result.getResponse().getContentAsString(),
-              new TypeReference<>() {
-              });
-
-      assertNotNull(response);
-      assertEquals("Unauthorized", response.getMessage());
-    });
-    assertNotNull(user);
-    assertNotNull(admin);
-    assertNotNull(kating);
-  }
-
-  @Test
-  void testGetOtherCBDForbidden() throws Exception {
-    User admin = userRepository.findById("12345678").orElse(null);
-    User user = userRepository.findById("87654321").orElse(null);
-    User kating = userRepository.findById("99122211").orElse(null);
-
-    for (int i = 1; i <= 22; i++) {
-      ControlBookDetail cbd = new ControlBookDetail();
-      cbd.setId(UUID.randomUUID().toString());
-      cbd.setTutor(admin);
-      if(i < 10){
-        cbd.setDate(LocalDate.parse("2023-10-0"+i));
-      }else {
-        cbd.setDate(LocalDate.parse("2023-10-"+i));
-      }
-      cbd.setLesson("Lesson btq " + i);
-      if(i % 2 == 0){
-        cbd.setUser(user);
-      }else{
-        cbd.setUser(kating);
-      }
-      controlBookDetailRepository.save(cbd);
-    }
-
-    mvc.perform(
-            get(BASE_CBD_URL + "/" + kating.getUsername())
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("X-API-TOKEN", user.getToken())
-    ).andExpectAll(
-            status().isForbidden()
-    ).andExpectAll(result -> {
-      ErrorResponse response = mapper.readValue(result.getResponse().getContentAsString(),
-              new TypeReference<>() {
-              });
-
-      assertNotNull(response);
-      assertEquals("This Operation is not support for you role!", response.getMessage());
-    });
-    assertNotNull(user);
-    assertNotNull(admin);
-    assertNotNull(kating);
-  }
-  @Test
-  void testGetCurrentCBDSuccess() throws Exception {
-    User admin = userRepository.findById("12345678").orElse(null);
-    User user = userRepository.findById("87654321").orElse(null);
-
-    for (int i = 1; i <= 22; i++) {
-      ControlBookDetail cbd = new ControlBookDetail();
-      cbd.setId(UUID.randomUUID().toString());
-      cbd.setTutor(admin);
-      if(i < 10){
-        cbd.setDate(LocalDate.parse("2023-10-0"+i));
-      }else {
-        cbd.setDate(LocalDate.parse("2023-10-"+i));
-      }
-      cbd.setLesson("Lesson btq " + i);
-      cbd.setUser(user);
-      controlBookDetailRepository.save(cbd);
-    }
-
-    mvc.perform(
-            get(BASE_CBD_URL)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("X-API-TOKEN", user.getToken())
-    ).andExpectAll(
-            status().isOk()
-    ).andExpectAll(result -> {
-      WebResponseWithPaging<List<ControlBookDetailResponse>> response = mapper.readValue(result.getResponse().getContentAsString(),
-              new TypeReference<>() {
-              });
-
-      assertNotNull(response);
-      System.out.println(response.getData());
-      System.out.println(response.getPagination());
-      assertEquals(10,response.getData().size());
-      assertEquals(0,response.getPagination().getPage());
-      assertEquals(3,response.getPagination().getPageSize());
-      assertEquals(10,response.getPagination().getTotalItems());
-      assertEquals("Success get all btq details", response.getMessage());
-    });
-    assertNotNull(user);
-    assertNotNull(admin);
-  }
-
-  @Test
-  void testGetCurrentCBDUnauthorized() throws Exception {
-    User admin = userRepository.findById("12345678").orElse(null);
-    User user = userRepository.findById("87654321").orElse(null);
-
-    for (int i = 1; i <= 22; i++) {
-      ControlBookDetail cbd = new ControlBookDetail();
-      cbd.setId(UUID.randomUUID().toString());
-      cbd.setTutor(admin);
-      if(i < 10){
-        cbd.setDate(LocalDate.parse("2023-10-0"+i));
-      }else {
-        cbd.setDate(LocalDate.parse("2023-10-"+i));
-      }
-      cbd.setLesson("Lesson btq " + i);
-      cbd.setUser(user);
-      controlBookDetailRepository.save(cbd);
-    }
-
-    mvc.perform(
-            get(BASE_CBD_URL)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON)
-    ).andExpectAll(
-            status().isUnauthorized()
-    ).andExpectAll(result -> {
-      ErrorResponse response = mapper.readValue(result.getResponse().getContentAsString(),
-              new TypeReference<>() {
-              });
-
-      assertNotNull(response);
-      assertEquals("Unauthorized", response.getMessage());
-    });
-    assertNotNull(user);
-    assertNotNull(admin);
   }
 
   @Test

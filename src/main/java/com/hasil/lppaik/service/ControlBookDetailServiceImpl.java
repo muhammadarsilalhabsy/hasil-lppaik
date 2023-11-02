@@ -41,6 +41,15 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
   }
 
   @Override
+  public ControlBookDetailResponse getCbdDetailWithId(String id) {
+    ControlBookDetail cbd = cbdRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("control book detail with id %s is NOT FOUND", id)));
+
+    return utils.cbdToCbdResponse(cbd);
+  }
+
+  @Override
   @Transactional(readOnly = true)
   public Page<ControlBookDetailResponse> getOtherUserCBD(User user, PagingRequest request) {
 

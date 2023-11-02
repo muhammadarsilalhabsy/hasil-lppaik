@@ -3,6 +3,7 @@ package com.hasil.lppaik.service;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.*;
 import com.hasil.lppaik.model.response.SimpleActivityResponse;
+import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,10 @@ public interface UserService {
 
   Page<SimpleActivityResponse> getUserCurrentActivities(User user, PagingRequest request);
 
+  SimpleUserResponse getUserById(String username);
+
+  Page<SimpleActivityResponse> getOtherUserActivities(User user, PagingRequest request);
+
   // PATCH
 
   String updateUserWithId(User user, UpdateUserRequest request);
@@ -26,4 +31,5 @@ public interface UserService {
   void updateCurrentUserPassword(User user, UpdateUserPasswordRequest request);
 
   void updateCurrentUserAvatar(User user, MultipartFile file) throws IOException;
+
 }

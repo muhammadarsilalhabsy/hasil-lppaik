@@ -17,10 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,8 +71,10 @@ public abstract class AbstractSetupEndToEndTest {
                     .forEach(activity -> { // get detail activitiynya
 
                       // putuskan relasi dengan usernya
-                      activity.getUsers()
-                              .forEach( u -> u.getActivities().remove(activity));
+                      if(activity.getUsers().size() != 0 ){
+                        activity.getUsers()
+                                .forEach( u -> u.getActivities().remove(activity));
+                      }
 
                       // save user yang sudah putus relasinya
                       userRepository.saveAll(activity.getUsers());

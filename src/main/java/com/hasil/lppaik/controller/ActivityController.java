@@ -1,12 +1,10 @@
 package com.hasil.lppaik.controller;
 
-import com.hasil.lppaik.entity.ActivityImage;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.CreateActivityRequest;
 import com.hasil.lppaik.model.request.SearchActivityRequest;
 import com.hasil.lppaik.model.request.UpdateActivityRequest;
 import com.hasil.lppaik.model.response.ActivityResponse;
-import com.hasil.lppaik.model.response.PagingResponse;
 import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.model.response.WebResponseWithPaging;
 import com.hasil.lppaik.service.ActivityServiceImpl;
@@ -46,16 +44,11 @@ public class ActivityController {
             .size(size)
             .build();
 
-    Page<ActivityResponse> response = activityService.getAllActivities(request);
+    Page<ActivityResponse> pages = activityService.getAllActivities(request);
 
     return WebResponseWithPaging.<List<ActivityResponse>>builder()
-            .data(response.getContent())
-            .pagination(PagingResponse.builder()
-                    .totalItems(response.getContent().size())
-                    .pageSize(response.getTotalPages())
-                    .page(response.getNumber())
-                    .size(response.getSize())
-                    .build())
+            .data(pages.getContent())
+            .pagination(Utils.getPagingResponse(pages))
             .message("success get activities")
             .build();
   }

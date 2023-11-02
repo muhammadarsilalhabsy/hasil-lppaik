@@ -18,4 +18,6 @@ public interface ControlBookDetailService {
   Page<ControlBookDetailResponse> getCurrentCBD(User user, PagingRequest request);
 
   Page<ControlBookDetailResponse> getOtherUserCBD(User user, PagingRequest request);
+
+  ControlBookDetailResponse getCbdDetailWithId(String id);
 }
