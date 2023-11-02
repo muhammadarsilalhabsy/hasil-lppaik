@@ -30,7 +30,8 @@ public class AuthController {
           path = "/register",
           produces = MediaType.APPLICATION_JSON_VALUE,
           consumes = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponse<String> registerUsers(User user, @RequestBody List<@Valid RegisterUserRequest> requestList){
+  public WebResponse<String> registerUsers(User user,
+                                           @RequestBody List<@Valid RegisterUserRequest> requestList){
 
     Integer userSize = authService.registerUsers(user, requestList);
     return WebResponse.<String>builder()

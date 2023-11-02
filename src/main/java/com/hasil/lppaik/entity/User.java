@@ -55,7 +55,7 @@ public class User {
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_activities",
           joinColumns = @JoinColumn(name = "user_username", referencedColumnName = "username"),
-          inverseJoinColumns = @JoinColumn(name = "activity_obj_id", referencedColumnName = "obj_id"))
+          inverseJoinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "id"))
   private Set<Activity> activities = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.EAGER)

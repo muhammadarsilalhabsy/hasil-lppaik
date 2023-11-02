@@ -32,8 +32,8 @@ import java.util.Set;
 public class UpdateUserTest extends AbstractSetupEndToEndTest {
 
   @Autowired
-  public UpdateUserTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
-    super(mapper, mvc, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
+  public UpdateUserTest(ObjectMapper mapper, MockMvc mvc, ActivityImageRepository activityImageRepository, ActivityRepository activityRepository, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+    super(mapper, mvc, activityImageRepository, activityRepository, userRepository, majorRepository, roleRepository, certificateRepository, controlBookDetailRepository);
   }
 
   @Test
@@ -42,7 +42,7 @@ public class UpdateUserTest extends AbstractSetupEndToEndTest {
     User mhs = userRepository.findById("87654321").orElse(null);
 
     UpdateUserRequest request = UpdateUserRequest.builder()
-            .roles(Set.of(RoleEnum.KATING, RoleEnum.MAHASISWA))
+            .roles(Set.of(RoleEnum.KATING, RoleEnum.ADMIN))
             .email("new@gmail.com")
             .name("new simple name")
             .completed(true)

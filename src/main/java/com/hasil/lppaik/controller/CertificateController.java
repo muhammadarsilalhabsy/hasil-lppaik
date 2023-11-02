@@ -23,6 +23,7 @@ public class CertificateController {
     this.certificateService = certificateService;
   }
 
+  // ALL ROLES
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponse<CertificateResponse> getUserCertificateWithId(@RequestParam("id") String id){
 

@@ -1,14 +1,9 @@
 package com.hasil.lppaik.service;
 
 
-import com.hasil.lppaik.entity.ControlBookDetail;
-import com.hasil.lppaik.entity.Major;
-import com.hasil.lppaik.entity.Role;
-import com.hasil.lppaik.entity.User;
+import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
-import com.hasil.lppaik.model.response.ControlBookDetailResponse;
-import com.hasil.lppaik.model.response.SimpleUserResponse;
-import com.hasil.lppaik.model.response.UserResponse;
+import com.hasil.lppaik.model.response.*;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.security.BCrypt;
 import jakarta.validation.ConstraintViolation;
@@ -43,6 +38,37 @@ public class Utils {
     this.majorRepository = majorRepository;
   }
 
+  public SimpleActivityResponse activityToSimpleActivityResponse(Activity activity){
+    SimpleActivityResponse response = new SimpleActivityResponse();
+    response.setId(activity.getId());
+    response.setTitle(activity.getTitle());
+    response.setDate(activity.getDate());
+    if(activity.getImages().size() != 0){
+    response.setImage(activity.getImages().get(0).getImage());
+    }
+
+    return response;
+  }
+
+  public static boolean parseBoolean(String s) {
+    return "true".equalsIgnoreCase(s);
+  }
+  public ActivityResponse activityToActivityResponse(Activity activity){
+
+    ActivityResponse response = new ActivityResponse();
+    response.setId(activity.getId());
+    response.setDate(activity.getDate());
+    response.setTitle(activity.getTitle());
+    response.setEndTime(activity.getEndTime());
+    response.setLocation(activity.getLocation());
+    response.setStartTime(activity.getStartTime());
+    response.setDescription(activity.getDescription());
+    if(activity.getImages().size() != 0) {
+      response.setImages(activity.getImages().stream().map(ActivityImage::getImage)
+              .collect(Collectors.toList()));
+    }
+    return response;
+  }
   public ControlBookDetailResponse cbdToCbdResponse(ControlBookDetail detail){
     return ControlBookDetailResponse.builder()
             .id(detail.getId())

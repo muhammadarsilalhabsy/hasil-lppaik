@@ -1,21 +1,18 @@
 package com.hasil.lppaik.service;
 
 import com.hasil.lppaik.entity.*;
-import com.hasil.lppaik.model.request.SearchUserRequest;
-import com.hasil.lppaik.model.request.UpdateUserDetailRequest;
-import com.hasil.lppaik.model.request.UpdateUserPasswordRequest;
-import com.hasil.lppaik.model.request.UpdateUserRequest;
+import com.hasil.lppaik.model.request.*;
+import com.hasil.lppaik.model.response.ControlBookDetailResponse;
+import com.hasil.lppaik.model.response.SimpleActivityResponse;
 import com.hasil.lppaik.model.response.UserResponse;
+import com.hasil.lppaik.repository.ActivityRepository;
 import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.repository.UserRepository;
 import com.hasil.lppaik.security.BCrypt;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,15 +39,38 @@ public class UserServiceImpl implements UserService {
 
   private final CertificateServiceImpl certificateService;
 
+  private final ActivityRepository activityRepository;
+
   @Autowired
-  public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService) {
+  public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository) {
     this.utils = utils;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.imageService = imageService;
     this.certificateService = certificateService;
+    this.activityRepository = activityRepository;
   }
 
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<SimpleActivityResponse> getUserCurrentActivities(User user, PagingRequest request) {
+
+    Specification<Activity> specification = (root, query, builder) -> {
+
+      Join<Activity, User> current = root.join("users");
+
+      return query.where(builder.equal(current.get("username"), user.getUsername())).getRestriction();
+
+    };
+
+    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Page<Activity> activities = activityRepository.findAll(specification, pageable);
+    List<SimpleActivityResponse> response = activities.getContent().stream()
+            .map(utils::activityToSimpleActivityResponse).collect(Collectors.toList());
+
+    return new PageImpl<>(response, pageable, activities.getTotalElements());
+  }
 
   @Override
   @Transactional(readOnly = true)

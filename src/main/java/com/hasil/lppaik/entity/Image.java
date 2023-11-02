@@ -28,7 +28,4 @@ public class Image {
 
   private String type;
 
-  @ManyToMany(mappedBy = "images", fetch = FetchType.EAGER)
-  private Set<Activity> activities = new HashSet<>();
-
 }

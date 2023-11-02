@@ -15,9 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,22 +34,32 @@ public abstract class AbstractSetupEndToEndTest {
   protected final String BASE_CERTIFICATE_URL = "/api/v1/certificate";
   protected final String BASE_MAJOR_URL = "/api/v1/majors";
   protected final String BASE_CBD_URL = "/api/v1/control-book";
+  public final String BASE_ACTIVITIES_URL = "/api/v1/activities";
+
   public final ObjectMapper mapper;
 
   public final MockMvc mvc;
 
+  public final ActivityImageRepository activityImageRepository;
+
+  public final ActivityRepository activityRepository;
+
   public final UserRepository userRepository;
+
   public final MajorRepository majorRepository;
 
   public final RoleRepository roleRepository;
+
   public final CertificateRepository certificateRepository;
 
   public final ControlBookDetailRepository controlBookDetailRepository;
 
   @Autowired
-  public AbstractSetupEndToEndTest(ObjectMapper mapper, MockMvc mvc, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
+  public AbstractSetupEndToEndTest(ObjectMapper mapper, MockMvc mvc, ActivityImageRepository activityImageRepository, ActivityRepository activityRepository, UserRepository userRepository, MajorRepository majorRepository, RoleRepository roleRepository, CertificateRepository certificateRepository, ControlBookDetailRepository controlBookDetailRepository) {
     this.mapper = mapper;
     this.mvc = mvc;
+    this.activityImageRepository = activityImageRepository;
+    this.activityRepository = activityRepository;
     this.userRepository = userRepository;
     this.majorRepository = majorRepository;
     this.roleRepository = roleRepository;
@@ -56,6 +69,22 @@ public abstract class AbstractSetupEndToEndTest {
 
   @BeforeEach
   void setUp() {
+    activityImageRepository.deleteAll();
+    activityRepository.findAll() // find semua activity nya
+                    .forEach(activity -> { // get detail activitiynya
+
+                      // putuskan relasi dengan usernya
+                      activity.getUsers()
+                              .forEach( u -> u.getActivities().remove(activity));
+
+                      // save user yang sudah putus relasinya
+                      userRepository.saveAll(activity.getUsers());
+
+                      // delete semua activity yang sudah tidak memiliki user lagi
+                      activityRepository.delete(activity);
+                    });
+    // make sure activity nya terdelete semua
+    activityRepository.deleteAll();
     controlBookDetailRepository.deleteAll();
     certificateRepository.deleteAll();
     userRepository.deleteAll();
@@ -191,5 +220,39 @@ public abstract class AbstractSetupEndToEndTest {
       users.add(uLoop);
     }
     userRepository.saveAll(users);
+
+    Activity activity = new Activity();
+    activity.setId("test-get-activity");
+    activity.setLocation("lr. simple location");
+    activity.setDate(LocalDate.now());
+    activity.setTitle("simple title");
+    activity.setDescription("simple desc");
+    activity.setMandatory(true);
+    activity.setStartTime(LocalTime.now());
+    activity.setEndTime(LocalTime.now());
+
+    activityRepository.save(activity);
+
+    for(String data : List.of("img 1", "img 2", "img 3", "img 4")){
+      ActivityImage activityImage = new ActivityImage();
+      activityImage.setId(UUID.randomUUID().toString());
+      activityImage.setImage(data);
+      activityImage.setActivity(activity);
+      activityImageRepository.save(activityImage);
+    }
+
+    for (int i = 1; i <= 10; i++) {
+      Activity activity1 = new Activity();
+      activity1.setId("activity1" + i);
+      activity1.setLocation("lr. simple location " + i);
+      activity1.setDate(LocalDate.now());
+      activity1.setTitle("simple title " + i);
+      activity1.setDescription("simple desc " + i);
+      activity1.setMandatory(i % 2 == 0);
+      activity1.setStartTime(LocalTime.now());
+      activity1.setEndTime(LocalTime.now());
+
+      activityRepository.save(activity1);
+    }
   }
 }

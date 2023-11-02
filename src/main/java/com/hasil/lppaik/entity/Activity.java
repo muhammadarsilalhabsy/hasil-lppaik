@@ -8,7 +8,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -20,14 +22,12 @@ import java.util.Set;
 public class Activity {
 
   @Id
-  private Integer id;
-
-  @Column(name = "obj_id")
-  private String objId;
+  private String id;
 
   private String title;
 
-  private LocalDate date;
+  private Boolean mandatory = false;
+  private LocalDate date = LocalDate.now();
 
   private String location;
 
@@ -43,10 +43,7 @@ public class Activity {
   @ManyToMany(mappedBy = "activities", fetch = FetchType.EAGER)
   private Set<User> users = new HashSet<>();
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "image_activities",
-          joinColumns = @JoinColumn(name = "activity_obj_id", referencedColumnName = "obj_id"),
-          inverseJoinColumns = @JoinColumn(name = "image_id", referencedColumnName = "id"))
-  private Set<Image> images = new HashSet<>();
+  @OneToMany(mappedBy = "activity")
+  private List<ActivityImage> images = new ArrayList<>();
 
 }
