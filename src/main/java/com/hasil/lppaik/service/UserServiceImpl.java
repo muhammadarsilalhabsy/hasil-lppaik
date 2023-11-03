@@ -64,6 +64,8 @@ public class UserServiceImpl implements UserService {
   @Transactional(readOnly = true)
   public Page<SimpleActivityResponse> getOtherUserActivities(User user, PagingRequest request) {
 
+    int page = request.getPage() - 1;
+
     boolean isAllow = user.getRoles().stream()
             .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
                     || role.getName().equals(RoleEnum.DOSEN)
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     };
 
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by("date").descending());
     Page<Activity> activities = activityRepository.findAll(specification, pageable);
     List<SimpleActivityResponse> response = activities.getContent().stream()
             .map(utils::activityToSimpleActivityResponse).collect(Collectors.toList());
@@ -93,6 +95,8 @@ public class UserServiceImpl implements UserService {
   @Transactional(readOnly = true)
   public Page<SimpleActivityResponse> getUserCurrentActivities(User user, PagingRequest request) {
 
+    int page = request.getPage() - 1;
+
     Specification<Activity> specification = (root, query, builder) -> {
 
       Join<Activity, User> current = root.join("users");
@@ -101,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
     };
 
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by("date").descending());
     Page<Activity> activities = activityRepository.findAll(specification, pageable);
     List<SimpleActivityResponse> response = activities.getContent().stream()
             .map(utils::activityToSimpleActivityResponse).collect(Collectors.toList());
@@ -112,6 +116,8 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional(readOnly = true)
   public Page<UserResponse> searchUser(User user, SearchUserRequest request) {
+
+    int page = request.getPage() - 1;
 
     utils.validate(request);
 
@@ -186,7 +192,7 @@ public class UserServiceImpl implements UserService {
 
     };
 
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    Pageable pageable = PageRequest.of(page, request.getSize());
     Page<User> users = userRepository.findAll(specification, pageable);
     List<UserResponse> userResponses = users.getContent().stream()
             .map(person -> utils.getUserResponse(person))

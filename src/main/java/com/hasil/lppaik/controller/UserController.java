@@ -40,7 +40,7 @@ public class UserController {
   @GetMapping(path = "/control-book/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<ControlBookDetailResponse>> getOtherUserCBDDetail(User user,
                                                                                       @PathVariable("username") String username,
-                                                                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                                                       @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
     PagingRequest request = PagingRequest.builder()
@@ -61,7 +61,7 @@ public class UserController {
   // GET USER CURRENT CBD LIST [CURRENT USER ONLY]
   @GetMapping(path = "/control-book", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<ControlBookDetailResponse>> getCurrentUserCBDDetail(User user,
-                                                                                        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                        @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                                                         @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
 
@@ -82,7 +82,7 @@ public class UserController {
           produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<SimpleActivityResponse>> getOtherUserActivities(User user,
                                                                                       @PathVariable("username") String username,
-                                                                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                                                       @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
     PagingRequest request = new PagingRequest();
@@ -115,7 +115,7 @@ public class UserController {
   @GetMapping(path = "/activities",
           produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<SimpleActivityResponse>> getUserCurrentActivities(User user,
-                                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                      @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                       @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
     PagingRequest request = new PagingRequest();
@@ -137,7 +137,7 @@ public class UserController {
   public WebResponseWithPaging<List<UserResponse>> search (User user,
                                                            @RequestParam(name = "identity", required = false) String identity,
                                                            @RequestParam(name = "major", required = false) String major,
-                                                           @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                           @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
 
     SearchUserRequest request = SearchUserRequest.builder()

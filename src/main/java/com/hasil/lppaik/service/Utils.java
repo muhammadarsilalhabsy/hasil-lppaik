@@ -45,8 +45,9 @@ public class Utils {
   }
 
   public static PagingResponse getPagingResponse(Page<?> page){
+    int pageNumber = page.getNumber() + 1;
     return PagingResponse.builder()
-            .page(page.getNumber()) // current page
+            .page(pageNumber) // current page
             .totalItems(page.getContent().size()) // get total items
             .pageSize(page.getTotalPages()) // total page keseluruhan
             .size(page.getSize())

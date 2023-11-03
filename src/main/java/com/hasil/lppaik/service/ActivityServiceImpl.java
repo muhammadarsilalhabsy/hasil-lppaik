@@ -46,6 +46,8 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   public Page<ActivityResponse> getAllActivities(SearchActivityRequest request) {
+    int page = request.getPage() - 1;
+
     utils.validate(request);
 
     // query
@@ -64,7 +66,7 @@ public class ActivityServiceImpl implements ActivityService {
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
     };
 
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by("date").descending());
     Page<Activity> activities = activityRepository.findAll(specification, pageable);
     List<ActivityResponse> activityResponse = activities.getContent().stream()
             .map(utils::activityToActivityResponse)

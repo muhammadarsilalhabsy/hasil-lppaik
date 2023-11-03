@@ -33,7 +33,7 @@ public class ActivityController {
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<ActivityResponse>> getAllActivities(@RequestParam(name = "title", required = false) String title,
                                                                         @RequestParam(name = "mandatory", required = false, defaultValue = "false") String mandatory,
-                                                                        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                                        @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
                                                                         @RequestParam(name = "size", required = false, defaultValue = "10") Integer size){
 
 

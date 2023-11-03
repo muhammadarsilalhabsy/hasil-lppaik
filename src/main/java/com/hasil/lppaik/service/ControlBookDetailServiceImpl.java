@@ -53,6 +53,8 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
   @Transactional(readOnly = true)
   public Page<ControlBookDetailResponse> getOtherUserCBD(User user, PagingRequest request) {
 
+    int page = request.getPage() - 1;
+
     boolean isAllow = user.getRoles().stream()
             .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
                     || role.getName().equals(RoleEnum.TUTOR)
@@ -73,7 +75,7 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
       return query.where(builder.equal(current.get("username"), student.getUsername())).getRestriction();
 
     };
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by("date").descending());
     Page<ControlBookDetail> cbds = cbdRepository.findAll(specification, pageable);
     List<ControlBookDetailResponse> cbdResponse = cbds.getContent().stream()
             .map(detail -> utils.cbdToCbdResponse(detail)).collect(Collectors.toList());
@@ -85,6 +87,7 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
   @Transactional(readOnly = true)
   public Page<ControlBookDetailResponse> getCurrentCBD(User user, PagingRequest request) {
 
+    int page = request.getPage() - 1;
 
     Specification<ControlBookDetail> specification = (root, query, builder) -> {
 
@@ -95,7 +98,7 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
       return query.where(builder.equal(current.get("username"), user.getUsername())).getRestriction();
 
     };
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("date").descending());
+    Pageable pageable = PageRequest.of(page, request.getSize(), Sort.by("date").descending());
     Page<ControlBookDetail> cbds = cbdRepository.findAll(specification, pageable);
     List<ControlBookDetailResponse> cbdResponse = cbds.getContent().stream()
             .map(detail -> utils.cbdToCbdResponse(detail)).collect(Collectors.toList());
