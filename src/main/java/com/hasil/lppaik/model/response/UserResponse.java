@@ -29,5 +29,7 @@ public class UserResponse {
   private String major;
   private String motto;
 
+  private String certificate;
+
   private List<RoleEnum> roles;
 }

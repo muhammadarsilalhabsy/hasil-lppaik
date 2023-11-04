@@ -18,4 +18,6 @@ public class SimpleUserResponse {
   private String major;
   private String avatar;
   private Boolean completed;
+
+  private String certificate;
 }

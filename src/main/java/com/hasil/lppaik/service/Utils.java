@@ -4,6 +4,7 @@ package com.hasil.lppaik.service;
 import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.RegisterUserRequest;
 import com.hasil.lppaik.model.response.*;
+import com.hasil.lppaik.repository.CertificateRepository;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.security.BCrypt;
@@ -35,13 +36,16 @@ public class Utils {
 
   private final MajorRepository majorRepository;
   private final RoleRepository roleRepository;
+  private final CertificateRepository certificateRepository;
 
   @Autowired
   public Utils(Validator validator, MajorRepository majorRepository,
-               RoleRepository roleRepository) {
+               RoleRepository roleRepository,
+               CertificateRepository certificateRepository) {
     this.validator = validator;
     this.majorRepository = majorRepository;
     this.roleRepository = roleRepository;
+    this.certificateRepository = certificateRepository;
   }
 
   public static PagingResponse getPagingResponse(Page<?> page){
@@ -122,6 +126,8 @@ public class Utils {
   }
 
   public SimpleUserResponse userToSimpleUser(User user){
+    Certificate certificate = user.getCertificate();
+
     SimpleUserResponse response = new SimpleUserResponse();
     response.setName(user.getName());
     response.setEmail(user.getEmail());
@@ -131,22 +137,36 @@ public class Utils {
     if(Objects.nonNull(user.getMajor())){
       response.setMajor(user.getMajor().getName());
     }
+    if(Objects.nonNull(certificate)){
+      response.setCertificate(certificate.getId());
+    }
     return response;
   }
   public UserResponse getUserResponse(User user){
-    return UserResponse.builder()
-            .username(user.getUsername())
-            .motto(user.getMotto())
-            .email(user.getEmail())
-            .gender(user.getGender())
-            .avatar(user.getAvatar())
-            .name(user.getName())
-            .major(user.getMajor().getName())
-            .completed(user.getCompleted())
-            .roles(user.getRoles().stream()
-                    .map(Role::getName)
-                    .collect(Collectors.toList()))
-            .build();
+    Certificate certificate = user.getCertificate();
+    UserResponse response = new UserResponse();
+
+    response.setName(user.getName());
+    response.setMotto(user.getMotto());
+    response.setEmail(user.getEmail());
+    response.setAvatar(user.getAvatar());
+    response.setUsername(user.getUsername());
+    response.setCompleted(user.getCompleted());
+    if(Objects.nonNull(user.getGender())){
+      response.setGender(user.getGender());
+    }
+    if(Objects.nonNull(user.getMajor())){
+      response.setMajor(user.getMajor().getName());
+    }
+    if(Objects.nonNull(certificate)){
+      response.setCertificate(certificate.getId());
+    }
+    if(user.getRoles().size() != 0){
+    response.setRoles(user.getRoles().stream()
+            .map(Role::getName)
+            .collect(Collectors.toList()));
+    }
+    return response;
   }
   public static byte[] compressImage(byte[] data) {
     Deflater deflater = new Deflater();
