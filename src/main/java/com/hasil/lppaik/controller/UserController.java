@@ -36,6 +36,19 @@ public class UserController {
     return null;
   }
 
+  // POST CREATE USERS [ADMIN ONLY]
+  @PostMapping(path = "/create",
+          produces = MediaType.APPLICATION_JSON_VALUE,
+          consumes = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> createUser(User user, @RequestBody CreateUserRequest request){
+
+    userService.createUser(user, request);
+    return WebResponse.<String>builder()
+            .data("OK")
+            .message("Success create new user")
+            .build();
+  }
+
   // GET OTHER USER CBD LIST [ADMIN, TUTOR, DOSEN]
   @GetMapping(path = "/control-book/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponseWithPaging<List<ControlBookDetailResponse>> getOtherUserCBDDetail(User user,

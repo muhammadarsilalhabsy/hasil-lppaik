@@ -32,4 +32,5 @@ public interface UserService {
 
   void updateCurrentUserAvatar(User user, MultipartFile file) throws IOException;
 
+  void createUser(User user, CreateUserRequest request);
 }

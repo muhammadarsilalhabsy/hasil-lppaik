@@ -7,6 +7,7 @@ import com.hasil.lppaik.model.response.SimpleActivityResponse;
 import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.repository.ActivityRepository;
+import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.repository.RoleRepository;
 import com.hasil.lppaik.repository.UserRepository;
 import com.hasil.lppaik.security.BCrypt;
@@ -41,15 +42,18 @@ public class UserServiceImpl implements UserService {
   private final CertificateServiceImpl certificateService;
 
   private final ActivityRepository activityRepository;
+  private final MajorRepository majorRepository;
 
   @Autowired
-  public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository) {
+  public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository,
+                         MajorRepository majorRepository) {
     this.utils = utils;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
     this.imageService = imageService;
     this.certificateService = certificateService;
     this.activityRepository = activityRepository;
+    this.majorRepository = majorRepository;
   }
 
   @Override
@@ -311,5 +315,46 @@ public class UserServiceImpl implements UserService {
     }
     user.setAvatar(imageService.saveImageToDb(file));
     userRepository.save(user);
+  }
+
+  @Override
+  @Transactional
+  public void createUser(User user, CreateUserRequest request) {
+    utils.validate(request);
+
+    // validate if user contain 'ADMIN' role
+    boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleEnum.ADMIN));
+
+    if(!isAdmin){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    User isExist = userRepository.findById(request.getUsername()).orElse(null);
+    if(Objects.nonNull(isExist)){
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This User already created");
+    }
+    User newUser = new User();
+
+    newUser.setUsername(request.getUsername());
+    newUser.setName(request.getName());
+    newUser.setEmail(request.getEmail());
+    newUser.setPassword(BCrypt.hashpw(request.getUsername(), BCrypt.gensalt()));
+    Major major = majorRepository.findById(request.getMajor()).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Major is not found")
+    );
+    newUser.setMajor(major);
+    if(Gender.isValidGender(request.getGender())) {
+      newUser.setGender(Gender.valueOf(request.getGender()));
+    }else{
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong Gender input");
+    }
+
+    for (RoleEnum role : request.getRoles()) {
+      Role exsistingRole = roleRepository.findByName(role)
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong Role input"));
+      newUser.getRoles().add(exsistingRole);
+    }
+
+    userRepository.save(newUser);
   }
 }
