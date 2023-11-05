@@ -2,6 +2,7 @@ package com.hasil.lppaik.controller;
 
 
 import com.hasil.lppaik.model.response.CertificateResponse;
+import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.service.CertificateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,11 @@ public class CertificateController {
 
   // ALL ROLES
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponse<CertificateResponse> getUserCertificateWithId(@RequestParam("id") String id){
+  public WebResponse<SimpleUserResponse> getUserCertificateWithId(@RequestParam("id") String id){
 
-    CertificateResponse certificate = certificateService.getUserCertificateWithId(id);
-    return WebResponse.<CertificateResponse>builder()
-            .data(certificate)
+    SimpleUserResponse response = certificateService.getUserCertificateWithId(id);
+    return WebResponse.<SimpleUserResponse>builder()
+            .data(response)
             .message("Success get certificate")
             .build();
   }

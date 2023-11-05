@@ -3,6 +3,7 @@ package com.hasil.lppaik.service;
 import com.hasil.lppaik.entity.Certificate;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.response.CertificateResponse;
+import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.repository.CertificateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,14 +27,13 @@ public class CertificateServiceImpl implements CertificateService {
   }
 
   @Override
-  public CertificateResponse getUserCertificateWithId(String id) {
+  public SimpleUserResponse getUserCertificateWithId(String id) {
     Certificate certificate = certificateRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate is NOT FOUND!"));
 
-    return CertificateResponse.builder()
-            .certificate(certificate.getId())
-            .user(utils.userToSimpleUser(certificate.getUser()))
-            .build();
+    User user = certificate.getUser();
+
+    return utils.userToSimpleUser(user);
   }
 
   @Override
