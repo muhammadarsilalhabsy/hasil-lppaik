@@ -225,6 +225,10 @@ public class UserServiceImpl implements UserService {
       candidate.setEmail(request.getEmail());
     }
 
+    if(Objects.nonNull(request.getPassword())){
+      candidate.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
+    }
+
     if(Objects.nonNull(request.getCompleted())){
       candidate.setCompleted(request.getCompleted());
 

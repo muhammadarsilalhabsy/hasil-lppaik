@@ -35,5 +35,8 @@ public class UpdateUserRequest {
 
   private Boolean completed;
 
+  @Size(min = 3, max = 255, message = "minimum password length is {min} - {max} character")
+  private String password;
+
   Set<RoleEnum> roles;
 }

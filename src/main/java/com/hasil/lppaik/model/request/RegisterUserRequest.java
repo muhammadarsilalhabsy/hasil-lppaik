@@ -22,7 +22,7 @@ public class RegisterUserRequest {
   private String username;
 
   @NotBlank(message = "name must be not blank")
-  @Size(min = 3, max = 255, message = "minimum name name is {min} - {max} character")
+  @Size(min = 3, max = 255, message = "minimum name length is {min} - {max} character")
   private String name;
 
   @NotBlank(message = "email must be not blank")
