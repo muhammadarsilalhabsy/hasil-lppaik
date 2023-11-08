@@ -57,11 +57,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public SimpleUserResponse getUserById(String username) {
+  public UserResponse getUserById(String username) {
     User user = userRepository.findById(username)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
 
-    return utils.userToSimpleUser(user);
+    return utils.getUserResponse(user);
   }
 
   @Override
@@ -270,6 +270,12 @@ public class UserServiceImpl implements UserService {
         candidate.getRoles().add(exsistingRole);
       }
     }
+
+    Major major = majorRepository.findById(request.getMajor()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("Major with id %s is NOT FOUND", request.getMajor())));
+
+    candidate.setMajor(major);
+
 
     userRepository.save(candidate);
 

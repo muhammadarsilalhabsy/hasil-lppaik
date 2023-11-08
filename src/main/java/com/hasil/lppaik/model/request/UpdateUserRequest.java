@@ -33,6 +33,8 @@ public class UpdateUserRequest {
 
   private String gender;
 
+  private String major;
+
   private Boolean completed;
 
   @Size(min = 3, max = 255, message = "minimum password length is {min} - {max} character")

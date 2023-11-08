@@ -14,7 +14,6 @@ import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -60,9 +59,13 @@ public class Utils {
 
   public SimpleActivityResponse activityToSimpleActivityResponse(Activity activity){
     SimpleActivityResponse response = new SimpleActivityResponse();
+
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String date = activity.getDate().format(dateFormatter);
+
     response.setId(activity.getId());
     response.setTitle(activity.getTitle());
-    response.setDate(activity.getDate());
+    response.setDate(date);
     if(activity.getImages().size() != 0){
     response.setImage(activity.getImages().get(0).getImage());
     }
@@ -76,12 +79,20 @@ public class Utils {
   public ActivityResponse activityToActivityResponse(Activity activity){
 
     ActivityResponse response = new ActivityResponse();
+
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    String date = activity.getDate().format(dateFormatter);
+    String startTime = activity.getStartTime().format(timeFormatter);
+    String endTime = activity.getEndTime().format(timeFormatter);
+
     response.setId(activity.getId());
-    response.setDate(activity.getDate());
+    response.setDate(date);
+    response.setEndTime(endTime);
+    response.setStartTime(startTime);
     response.setTitle(activity.getTitle());
-    response.setEndTime(activity.getEndTime());
     response.setLocation(activity.getLocation());
-    response.setStartTime(activity.getStartTime());
     response.setDescription(activity.getDescription());
     if(activity.getImages().size() != 0) {
       response.setImages(activity.getImages().stream().map(ActivityImage::getImage)
@@ -90,9 +101,14 @@ public class Utils {
     return response;
   }
   public ControlBookDetailResponse cbdToCbdResponse(ControlBookDetail detail){
+
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    String date = detail.getDate().format(dateFormatter);
+
     return ControlBookDetailResponse.builder()
             .id(detail.getId())
-            .date(detail.getDate())
+            .date(date)
             .lesson(detail.getLesson())
             .tutor(detail.getTutor().getName())
             .description(detail.getDescription())

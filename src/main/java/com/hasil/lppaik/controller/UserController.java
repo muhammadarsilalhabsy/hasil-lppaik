@@ -113,11 +113,11 @@ public class UserController {
             .build();
   }
 
-  // GET SIMPLE USER BY ID [ALL ROLES]
+  // GET USER BY ID [ALL ROLES]
   @GetMapping(path="/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponse<SimpleUserResponse> getUserById(@PathVariable("username") String username){
+  public WebResponse<UserResponse> getUserById(@PathVariable("username") String username){
 
-    SimpleUserResponse response = userService.getUserById(username);
+    UserResponse response = userService.getUserById(username);
     return WebResponse.<SimpleUserResponse>builder()
             .data(response)
             .message("Success get user with id " + username)

@@ -18,7 +18,7 @@ public interface UserService {
 
   Page<SimpleActivityResponse> getUserCurrentActivities(User user, PagingRequest request);
 
-  SimpleUserResponse getUserById(String username);
+  UserResponse getUserById(String username);
 
   Page<SimpleActivityResponse> getOtherUserActivities(User user, PagingRequest request);
 

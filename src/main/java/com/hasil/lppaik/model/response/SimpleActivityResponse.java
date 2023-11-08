@@ -19,7 +19,7 @@ public class SimpleActivityResponse {
 
   private String title;
 
-  private LocalDate date;
+  private String date;
 
   private String image;
 }

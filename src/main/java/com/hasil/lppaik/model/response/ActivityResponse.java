@@ -20,12 +20,12 @@ public class ActivityResponse {
   private String title;
   private String description;
 
-  private LocalDate date;
+  private String date;
 
   private String location;
 
-  private LocalTime endTime;
-  private LocalTime startTime;
+  private String endTime;
+  private String startTime;
 
   private List<String> images;
 }

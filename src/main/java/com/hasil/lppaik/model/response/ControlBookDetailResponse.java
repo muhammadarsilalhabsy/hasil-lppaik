@@ -17,7 +17,7 @@ public class ControlBookDetailResponse {
 
   private String tutor;
 
-  private LocalDate date;
+  private String date;
 
   private String lesson;
 

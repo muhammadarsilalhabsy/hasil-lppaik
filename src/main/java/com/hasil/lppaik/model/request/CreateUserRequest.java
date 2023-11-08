@@ -37,6 +37,7 @@ public class CreateUserRequest {
 
   @NotNull(message = "major must be not null")
   private String major;
+
   @Size(min = 1, message = "at least create {min} role")
   Set<RoleEnum> roles;
 
