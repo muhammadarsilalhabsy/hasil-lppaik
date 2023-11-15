@@ -2,6 +2,7 @@ package com.hasil.lppaik.service;
 
 import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.CreateActivityRequest;
+import com.hasil.lppaik.model.request.PagingRequest;
 import com.hasil.lppaik.model.request.SearchActivityRequest;
 import com.hasil.lppaik.model.request.UpdateActivityRequest;
 import com.hasil.lppaik.model.response.ActivityResponse;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -198,6 +196,53 @@ public class ActivityServiceImpl implements ActivityService {
                     "Activity with id " + id + " is NOT FOUND"));
 
     return utils.activityToActivityResponse(activity);
+  }
+
+  @Override
+  public Page<UserResponse> getAttendance(User user, PagingRequest request) {
+    int page = request.getPage() - 1;
+    String activityId = request.getUsername();
+    utils.validate(request);
+
+    // validate if user doesn't contain role 'ADMIN || KETING || DOSEN
+    boolean isAllow = user.getRoles().stream()
+            .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
+                    || role.getName().equals(RoleEnum.DOSEN)
+                    || role.getName().equals(RoleEnum.KATING));
+
+    if(!isAllow){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    boolean isKATING = user.getRoles().stream()
+            .anyMatch(role -> role.getName().equals(RoleEnum.KATING));
+
+    // query
+    Specification<User> specification = (root, query, builder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      Join<Activity, User> joinActivities = root.join("activities");
+      predicates.add(builder.equal(joinActivities.get("id"), activityId));
+
+      if(isKATING) {
+        Join<User, Role> role = root.join("roles");
+        predicates.add(builder.and(
+                builder.notEqual(role.get("name"), RoleEnum.ADMIN),
+                builder.notEqual(role.get("name"), RoleEnum.DOSEN)
+        ));
+      }
+
+      return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
+
+    };
+
+    Pageable pageable = PageRequest.of(page, request.getSize());
+    Page<User> users = userRepository.findAll(specification, pageable);
+    List<UserResponse> userResponses = users.getContent().stream()
+            .map(person -> utils.getUserResponse(person))
+            .collect(Collectors.toList());
+
+    return new PageImpl<>(userResponses, pageable, users.getTotalElements());
   }
 
   @Override

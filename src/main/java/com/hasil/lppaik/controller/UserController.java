@@ -118,7 +118,7 @@ public class UserController {
   public WebResponse<UserResponse> getUserById(@PathVariable("username") String username){
 
     UserResponse response = userService.getUserById(username);
-    return WebResponse.<SimpleUserResponse>builder()
+    return WebResponse.<UserResponse>builder()
             .data(response)
             .message("Success get user with id " + username)
             .build();
@@ -226,6 +226,17 @@ public class UserController {
     return WebResponse.<String>builder()
             .data("OK")
             .message("avatar has been updated")
+            .build();
+  }
+
+  // DELETE USER WITH ID [ADMIN ONLY]
+  @DeleteMapping(path = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> deleteUserWithId(User user, @PathVariable("username") String username){
+
+    userService.deleteUserWithId(user, username);
+    return WebResponse.<String>builder()
+            .data("OK")
+            .message("User deleted successfuly")
             .build();
   }
 }

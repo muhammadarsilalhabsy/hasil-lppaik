@@ -1,10 +1,9 @@
 package com.hasil.lppaik.controller;
 
 import com.hasil.lppaik.entity.User;
-import com.hasil.lppaik.model.request.CreateActivityRequest;
-import com.hasil.lppaik.model.request.SearchActivityRequest;
-import com.hasil.lppaik.model.request.UpdateActivityRequest;
+import com.hasil.lppaik.model.request.*;
 import com.hasil.lppaik.model.response.ActivityResponse;
+import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.model.response.WebResponseWithPaging;
 import com.hasil.lppaik.service.ActivityServiceImpl;
@@ -105,6 +104,28 @@ public class ActivityController {
     return WebResponse.<ActivityResponse>builder()
             .data(response)
             .message("Success get activity with id " + id)
+            .build();
+  }
+
+  // GET ACTIVITY ATTENDANCE
+  @GetMapping(path = "/{id}/attendance", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponseWithPaging<List<UserResponse>> getAttendance (User user,
+                                                           @PathVariable("id") String id,
+                                                           @RequestParam(name = "page", required = false, defaultValue = "1") Integer page,
+                                                           @RequestParam(name = "size", required = false, defaultValue = "10") Integer size) {
+
+    PagingRequest request = PagingRequest.builder()
+            .size(size)
+            .page(page)
+            .username(id)
+            .build();
+
+    Page<UserResponse> pages = activityService.getAttendance(user, request);
+
+    return WebResponseWithPaging.<List<UserResponse>>builder()
+            .data(pages.getContent())
+            .message("Success get attendance")
+            .pagination(Utils.getPagingResponse(pages))
             .build();
   }
 

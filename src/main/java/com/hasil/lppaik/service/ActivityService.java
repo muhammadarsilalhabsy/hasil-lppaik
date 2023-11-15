@@ -2,9 +2,11 @@ package com.hasil.lppaik.service;
 
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.CreateActivityRequest;
+import com.hasil.lppaik.model.request.PagingRequest;
 import com.hasil.lppaik.model.request.SearchActivityRequest;
 import com.hasil.lppaik.model.request.UpdateActivityRequest;
 import com.hasil.lppaik.model.response.ActivityResponse;
+import com.hasil.lppaik.model.response.UserResponse;
 import org.springframework.data.domain.Page;
 
 public interface ActivityService {
@@ -20,4 +22,6 @@ public interface ActivityService {
   void addActivityToOtherUser(User user, String id, String username);
 
   Page<ActivityResponse> getAllActivities(SearchActivityRequest request);
+
+  Page<UserResponse> getAttendance(User user, PagingRequest request);
 }

@@ -2,14 +2,9 @@ package com.hasil.lppaik.service;
 
 import com.hasil.lppaik.entity.*;
 import com.hasil.lppaik.model.request.*;
-import com.hasil.lppaik.model.response.ControlBookDetailResponse;
 import com.hasil.lppaik.model.response.SimpleActivityResponse;
-import com.hasil.lppaik.model.response.SimpleUserResponse;
 import com.hasil.lppaik.model.response.UserResponse;
-import com.hasil.lppaik.repository.ActivityRepository;
-import com.hasil.lppaik.repository.MajorRepository;
-import com.hasil.lppaik.repository.RoleRepository;
-import com.hasil.lppaik.repository.UserRepository;
+import com.hasil.lppaik.repository.*;
 import com.hasil.lppaik.security.BCrypt;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
@@ -23,9 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,9 +37,13 @@ public class UserServiceImpl implements UserService {
   private final ActivityRepository activityRepository;
   private final MajorRepository majorRepository;
 
+  private final ControlBookDetailRepository cbdRepository;
+  private final CertificateRepository certificateRepository;
+
   @Autowired
   public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository,
-                         MajorRepository majorRepository) {
+                         MajorRepository majorRepository, ControlBookDetailRepository cbdRepository,
+                         CertificateRepository certificateRepository) {
     this.utils = utils;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
@@ -54,6 +51,8 @@ public class UserServiceImpl implements UserService {
     this.certificateService = certificateService;
     this.activityRepository = activityRepository;
     this.majorRepository = majorRepository;
+    this.cbdRepository = cbdRepository;
+    this.certificateRepository = certificateRepository;
   }
 
   @Override
@@ -229,7 +228,7 @@ public class UserServiceImpl implements UserService {
       candidate.setEmail(request.getEmail());
     }
 
-    if(Objects.nonNull(request.getPassword())){
+    if(Objects.nonNull(request.getPassword()) && !request.getPassword().isBlank()){
       candidate.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
     }
 
@@ -362,5 +361,75 @@ public class UserServiceImpl implements UserService {
     }
 
     userRepository.save(newUser);
+  }
+
+  @Override
+  @Transactional
+  public void deleteUserWithId(User user, String username) {
+
+    boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleEnum.ADMIN));
+
+    if(!isAdmin){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    User candidate = userRepository.findById(username)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
+
+    if(candidate.getRoles().stream()
+            .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
+                    || role.getName().equals(RoleEnum.TUTOR))){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't delete ADMIN or TUTOR, it will break the application");
+    }
+
+    Set<Activity> activities = candidate.getActivities();
+    if (Objects.nonNull(activities) && !activities.isEmpty()) {
+      candidate.getActivities().clear(); // Hapus semua aktivitas
+    }
+
+    List<ControlBookDetail> cbd = candidate.getControlBookDetailUser();
+    if (Objects.nonNull(cbd) && !cbd.isEmpty()) {
+      cbdRepository.deleteAll(cbd); // Hapus semua ControlBookDetail dari basis data
+    }
+
+    Certificate certificate = candidate.getCertificate();
+    if (Objects.nonNull(certificate)) {
+      certificateRepository.delete(certificate); // Hapus sertifikat dari basis data
+    }
+
+    Set<Role> roles = candidate.getRoles();
+    if (Objects.nonNull(roles) && !roles.isEmpty()) {
+      candidate.getRoles().clear(); // Hapus semua peran
+    }
+
+    userRepository.delete(candidate); // Hapus pengguna setelah menghapus semua elemen yang terkait
+
+    // find all user activity then remove all, (putuskan relasi)
+    // minr
+//    Set<Activity> activities = candidate.getActivities();
+//    if(Objects.nonNull(activities) && activities.size() != 0) {
+//      candidate.getActivities().removeAll(activities);
+//    }
+//
+//    List<ControlBookDetail> cbd = candidate.getControlBookDetailUser();
+//    if(Objects.nonNull(cbd) && cbd.size() != 0) {
+//      cbdRepository.deleteAll(cbd);
+//    }
+//
+//    Certificate certificate = candidate.getCertificate();
+//    if(Objects.nonNull(certificate)){
+//      certificateRepository.delete(certificate);
+//    }
+//
+//    Set<Role> roles = candidate.getRoles();
+//    if(Objects.nonNull(roles) && roles.size() != 0) {
+//      for (Role role : roles) {
+//        candidate.getRoles().remove(role);
+//      }
+//    }
+
+
+    userRepository.delete(candidate);
+
   }
 }
