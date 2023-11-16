@@ -66,6 +66,20 @@ public class ActivityController {
             .build();
   }
 
+  // DELETE ACTIVITY FOR OTHER USER
+  @DeleteMapping(path = "/{id}/for/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> removeUserFromActivity(User user,
+                                                    @PathVariable("username") String username,
+                                                    @PathVariable("id") String id){
+
+    activityService.removeUserFromActivity(user, id, username);
+
+    return WebResponse.<String>builder()
+            .data("OK")
+            .message(String.format("User %s has been removed", username))
+            .build();
+  }
+
   // DELETE ACTIVITY [ADMIN]
   @DeleteMapping(path = "/{id}",
           produces = MediaType.APPLICATION_JSON_VALUE)

@@ -79,8 +79,11 @@ public class ActivityServiceImpl implements ActivityService {
 
     boolean isAllow = user.getRoles()
             .stream()
-            .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN) ||
-                    role.getName().equals(RoleEnum.TUTOR));
+            .anyMatch(role ->
+                    role.getName().equals(RoleEnum.ADMIN) ||
+                    role.getName().equals(RoleEnum.TUTOR) ||
+                    role.getName().equals(RoleEnum.KATING)
+            );
 
     if(!isAllow){
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
@@ -200,9 +203,16 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   public Page<UserResponse> getAttendance(User user, PagingRequest request) {
-    int page = request.getPage() - 1;
-    String activityId = request.getUsername();
+
     utils.validate(request);
+
+    int page = request.getPage() - 1;
+
+    String activityId = request.getUsername();
+
+    Activity activity = activityRepository.findById(activityId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Activity with id " + activityId + " is NOT FOUND"));
 
     // validate if user doesn't contain role 'ADMIN || KETING || DOSEN
     boolean isAllow = user.getRoles().stream()
@@ -222,7 +232,7 @@ public class ActivityServiceImpl implements ActivityService {
       List<Predicate> predicates = new ArrayList<>();
 
       Join<Activity, User> joinActivities = root.join("activities");
-      predicates.add(builder.equal(joinActivities.get("id"), activityId));
+      predicates.add(builder.equal(joinActivities.get("id"), activity.getId()));
 
       if(isKATING) {
         Join<User, Role> role = root.join("roles");
@@ -271,6 +281,41 @@ public class ActivityServiceImpl implements ActivityService {
 
     // delete activitynya
     activityRepository.delete(activity);
+
+  }
+
+  @Override
+  public void removeUserFromActivity(User user, String id, String username) {
+
+    boolean isAllow = user.getRoles()
+            .stream()
+            .anyMatch(role ->
+                    EnumSet.of(
+                    RoleEnum.ADMIN,
+                    RoleEnum.TUTOR,
+                    RoleEnum.KATING)
+                    .contains(role.getName()));
+
+    if(!isAllow){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    Activity activity = activityRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Activity with id " + id + " is NOT FOUND"));
+
+    User candidate = userRepository.findById(username)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
+
+    // Check if the candidate user is in the activity
+    if (!activity.getUsers().contains(candidate)) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is not associated with the activity");
+    }
+
+    activity.getUsers().remove(candidate);
+    candidate.getActivities().remove(activity);
+
+    activityRepository.save(activity);
 
   }
 }

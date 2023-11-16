@@ -24,4 +24,6 @@ public interface ActivityService {
   Page<ActivityResponse> getAllActivities(SearchActivityRequest request);
 
   Page<UserResponse> getAttendance(User user, PagingRequest request);
+
+  void removeUserFromActivity(User user, String id, String username);
 }
