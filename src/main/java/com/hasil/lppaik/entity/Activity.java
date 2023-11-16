@@ -34,6 +34,9 @@ public class Activity {
   @Lob
   private String description;
 
+  @Lob
+  private String link;
+
   @Column(name = "start_time")
   private LocalTime startTime;
 

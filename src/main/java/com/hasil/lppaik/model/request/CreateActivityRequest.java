@@ -28,6 +28,9 @@ public class CreateActivityRequest {
   @Size(min = 8, message = "min length should be {min}")
   private String description;
 
+  private boolean online;
+
+  private String link;
 
   private LocalDate date;
 

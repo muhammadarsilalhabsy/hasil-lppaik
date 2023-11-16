@@ -18,13 +18,17 @@ public class ActivityResponse {
   private String id;
 
   private String title;
+
   private String description;
+
+  private String link;
 
   private String date;
 
   private String location;
 
   private String endTime;
+
   private String startTime;
 
   private List<String> images;

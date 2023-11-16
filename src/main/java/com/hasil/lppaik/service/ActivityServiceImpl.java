@@ -139,6 +139,11 @@ public class ActivityServiceImpl implements ActivityService {
       activity.setDate(request.getDate());
     }
 
+    if (request.isOnline()) {
+      if(Objects.nonNull(request.getLink())){
+        activity.setLink(request.getLink());
+      }
+    }
 
     if(Objects.nonNull(request.getImages()) && request.getImages().size() != 0){
       activityImageRepository.deleteAll(activity.getImages());
@@ -178,6 +183,9 @@ public class ActivityServiceImpl implements ActivityService {
     activity.setEndTime(request.getEndTime());
     activity.setTitle(request.getTitle());
     activity.setDate(request.getDate());
+    if (request.isOnline()) {
+      activity.setLink(request.getLink());
+    }
 
     activityRepository.save(activity);
 

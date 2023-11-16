@@ -91,6 +91,7 @@ public class Utils {
     response.setDate(date);
     response.setEndTime(endTime);
     response.setStartTime(startTime);
+    response.setLink(activity.getLink());
     response.setTitle(activity.getTitle());
     response.setLocation(activity.getLocation());
     response.setDescription(activity.getDescription());
