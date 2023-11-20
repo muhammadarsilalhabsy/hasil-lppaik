@@ -29,15 +29,17 @@ public class ActivityServiceImpl implements ActivityService {
   private final ActivityRepository activityRepository;
 
   private final ActivityImageRepository activityImageRepository;
+  private final ActivityRegisterServiceImpl activityRegisterService;
 
   private final UserRepository userRepository;
 
   private final Utils utils;
 
   @Autowired
-  public ActivityServiceImpl(ActivityRepository activityRepository, ActivityImageRepository activityImageRepository, UserRepository userRepository, Utils utils) {
+  public ActivityServiceImpl(ActivityRepository activityRepository, ActivityImageRepository activityImageRepository, ActivityRegisterServiceImpl activityRegisterService, UserRepository userRepository, Utils utils) {
     this.activityRepository = activityRepository;
     this.activityImageRepository = activityImageRepository;
+    this.activityRegisterService = activityRegisterService;
     this.userRepository = userRepository;
     this.utils = utils;
   }
@@ -75,13 +77,12 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional
-  public void addActivityToOtherUser(User user, String id, String username) {
+  public void addActivityToOtherUser(User user, String id, String username, String regId) {
 
     boolean isAllow = user.getRoles()
             .stream()
             .anyMatch(role ->
                     role.getName().equals(RoleEnum.ADMIN) ||
-                    role.getName().equals(RoleEnum.TUTOR) ||
                     role.getName().equals(RoleEnum.KATING)
             );
 
@@ -97,6 +98,8 @@ public class ActivityServiceImpl implements ActivityService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
 
     candidate.getActivities().add(activity);
+
+    activityRegisterService.remove(user, regId);
 
     userRepository.save(candidate);
   }

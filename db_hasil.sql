@@ -224,6 +224,13 @@ delete from images;
 delete from majors;
 
 
+// ====================== generate BY mysql
+
+use db_hasil;
+show CREATE TABLE activities;
+
+
+
 
 
 

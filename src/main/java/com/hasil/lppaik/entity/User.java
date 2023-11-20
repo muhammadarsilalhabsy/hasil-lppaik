@@ -72,6 +72,8 @@ public class User {
   @OneToMany(mappedBy = "tutor")
   private List<ControlBookDetail> controlBookDetailTutor;
 
+  @OneToMany(mappedBy = "user")
+  private Set<ActivityRegister> activityRegisters = new HashSet<>();
 
 
 }

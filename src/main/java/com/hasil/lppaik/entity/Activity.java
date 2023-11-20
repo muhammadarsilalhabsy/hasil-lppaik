@@ -49,4 +49,7 @@ public class Activity {
   @OneToMany(mappedBy = "activity")
   private List<ActivityImage> images = new ArrayList<>();
 
+  @OneToMany(mappedBy = "activity")
+  private Set<ActivityRegister> activityRegisters = new HashSet<>();
+
 }

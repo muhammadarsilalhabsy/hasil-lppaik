@@ -2,10 +2,8 @@ package com.hasil.lppaik.controller;
 
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.*;
-import com.hasil.lppaik.model.response.ActivityResponse;
-import com.hasil.lppaik.model.response.UserResponse;
-import com.hasil.lppaik.model.response.WebResponse;
-import com.hasil.lppaik.model.response.WebResponseWithPaging;
+import com.hasil.lppaik.model.response.*;
+import com.hasil.lppaik.service.ActivityRegisterServiceImpl;
 import com.hasil.lppaik.service.ActivityServiceImpl;
 import com.hasil.lppaik.service.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +19,56 @@ import java.util.List;
 public class ActivityController {
 
   private final ActivityServiceImpl activityService;
+  private final ActivityRegisterServiceImpl activityRegisterService;
 
   @Autowired
-  public ActivityController(ActivityServiceImpl activityService) {
+  public ActivityController(ActivityServiceImpl activityService, ActivityRegisterServiceImpl activityRegisterService) {
     this.activityService = activityService;
+    this.activityRegisterService = activityRegisterService;
   }
 
+  // GET ALL USER REGISTER FROM ACTIVITIES
+  @GetMapping(path = "/{id}/register/users", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<List<SimpleUserResponse>> getAllRegisterByActivityId(User user, @PathVariable("id") String id){
+
+    List<SimpleUserResponse> response = activityRegisterService.getAllRegisterByActivityId(user, id);
+
+    return WebResponse.<List<SimpleUserResponse>>builder()
+            .data(response)
+            .message("Success get all users registered")
+            .build();
+  }
+
+  // REGISTER TO ACTIVITY
+  @PostMapping(path = "/{id}/register", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> register(User user, @PathVariable("id") String id){
+
+    activityRegisterService.register(user, id);
+
+    return WebResponse.<String>builder()
+            .message("Registered has been successfully")
+            .build();
+  }
+
+  // REMOVE USER REGISTER
+  @DeleteMapping(path = "/{id}/register", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> removeUserRegister(User user, @PathVariable("id") String id){
+
+    activityRegisterService.remove(user, id);
+
+    return WebResponse.<String>builder()
+            .message("User has been successfully removed")
+            .build();
+  }
+
+  // IS ALREADY REGISTERD
+  @GetMapping(path = "/{id}/register", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<Boolean> isRegistered(User user, @PathVariable("id") String id){
+
+    return WebResponse.<Boolean>builder()
+            .data(activityRegisterService.isRegistered(user, id))
+            .build();
+  }
 
   // GET ALL ACTIVITIES [ALL ROLES]
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,12 +95,13 @@ public class ActivityController {
   }
 
   // ADD ACTIVITY TO OTHER USER [ADMIN, KATING]
-  @PostMapping(path = "/{id}/for/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = "{id}/for/{username}/with-register/{reg}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponse<String> addActivityToOtherUser(User user,
                                                     @PathVariable("username") String username,
-                                                    @PathVariable("id") String id){
+                                                    @PathVariable("id") String id,
+                                                    @PathVariable("reg") String regId){
 
-    activityService.addActivityToOtherUser(user, id, username);
+    activityService.addActivityToOtherUser(user, id, username, regId);
 
     return WebResponse.<String>builder()
             .data("OK")

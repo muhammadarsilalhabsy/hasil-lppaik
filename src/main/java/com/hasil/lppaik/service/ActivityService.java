@@ -19,7 +19,7 @@ public interface ActivityService {
 
   void deleteActivity(User user, String id);
 
-  void addActivityToOtherUser(User user, String id, String username);
+  void addActivityToOtherUser(User user, String id, String username, String regId);
 
   Page<ActivityResponse> getAllActivities(SearchActivityRequest request);
 
