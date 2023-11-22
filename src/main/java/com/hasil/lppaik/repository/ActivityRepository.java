@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface ActivityRepository extends JpaRepository<Activity, String>,
         JpaSpecificationExecutor<Activity> {
 
-  boolean existsByUsers(User candidate);
+  boolean existsByUsersAndId(User user, String activityId);
 }

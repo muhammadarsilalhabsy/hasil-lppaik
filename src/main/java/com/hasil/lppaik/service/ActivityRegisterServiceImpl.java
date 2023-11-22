@@ -46,7 +46,7 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
 
     // Check if the user is already registered for the activity
     boolean isAlreadyRegistered = activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
-    boolean isUserAlreadyRegistered = activityRepo.existsByUsers(candidate);
+    boolean isUserAlreadyRegistered = activityRepo.existsByUsersAndId(candidate, activity);
 
     if(isAlreadyRegistered || isUserAlreadyRegistered){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already registered!");
@@ -114,6 +114,6 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
 
     // Check if the user is already registered for the activity
 
-    return activityRepo.existsByUsers(candidate) || activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
+    return activityRepo.existsByUsersAndId(candidate, activity) || activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
   }
 }
