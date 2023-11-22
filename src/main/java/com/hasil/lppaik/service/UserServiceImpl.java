@@ -37,12 +37,14 @@ public class UserServiceImpl implements UserService {
   private final ActivityRepository activityRepository;
   private final MajorRepository majorRepository;
 
+  private final ActivityRegisterRepository activityRegisterRepository;
+
   private final ControlBookDetailRepository cbdRepository;
   private final CertificateRepository certificateRepository;
 
   @Autowired
   public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository,
-                         MajorRepository majorRepository, ControlBookDetailRepository cbdRepository,
+                         MajorRepository majorRepository, ActivityRegisterRepository activityRegisterRepository, ControlBookDetailRepository cbdRepository,
                          CertificateRepository certificateRepository) {
     this.utils = utils;
     this.userRepository = userRepository;
@@ -51,6 +53,7 @@ public class UserServiceImpl implements UserService {
     this.certificateService = certificateService;
     this.activityRepository = activityRepository;
     this.majorRepository = majorRepository;
+    this.activityRegisterRepository = activityRegisterRepository;
     this.cbdRepository = cbdRepository;
     this.certificateRepository = certificateRepository;
   }
@@ -385,6 +388,11 @@ public class UserServiceImpl implements UserService {
     Set<Activity> activities = candidate.getActivities();
     if (Objects.nonNull(activities) && !activities.isEmpty()) {
       candidate.getActivities().clear(); // Hapus semua aktivitas
+    }
+
+    Set<ActivityRegister> activityRegister = candidate.getActivityRegisters();
+    if (Objects.nonNull(activityRegister) && !activityRegister.isEmpty()) {
+      activityRegisterRepository.deleteAll(activityRegister); // Hapus semua registrasi aktivitas
     }
 
     List<ControlBookDetail> cbd = candidate.getControlBookDetailUser();

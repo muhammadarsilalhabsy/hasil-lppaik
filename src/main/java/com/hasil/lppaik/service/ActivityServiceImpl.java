@@ -8,6 +8,7 @@ import com.hasil.lppaik.model.request.UpdateActivityRequest;
 import com.hasil.lppaik.model.response.ActivityResponse;
 import com.hasil.lppaik.model.response.UserResponse;
 import com.hasil.lppaik.repository.ActivityImageRepository;
+import com.hasil.lppaik.repository.ActivityRegisterRepository;
 import com.hasil.lppaik.repository.ActivityRepository;
 import com.hasil.lppaik.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ActivityServiceImpl implements ActivityService {
 
   private final ActivityRepository activityRepository;
+  private final ActivityRegisterRepository activityRegisterRepository;
 
   private final ActivityImageRepository activityImageRepository;
   private final ActivityRegisterServiceImpl activityRegisterService;
@@ -36,8 +38,9 @@ public class ActivityServiceImpl implements ActivityService {
   private final Utils utils;
 
   @Autowired
-  public ActivityServiceImpl(ActivityRepository activityRepository, ActivityImageRepository activityImageRepository, ActivityRegisterServiceImpl activityRegisterService, UserRepository userRepository, Utils utils) {
+  public ActivityServiceImpl(ActivityRepository activityRepository, ActivityRegisterRepository activityRegisterRepository, ActivityImageRepository activityImageRepository, ActivityRegisterServiceImpl activityRegisterService, UserRepository userRepository, Utils utils) {
     this.activityRepository = activityRepository;
+    this.activityRegisterRepository = activityRegisterRepository;
     this.activityImageRepository = activityImageRepository;
     this.activityRegisterService = activityRegisterService;
     this.userRepository = userRepository;
@@ -286,6 +289,12 @@ public class ActivityServiceImpl implements ActivityService {
 
     // ambil usernya lalu putuskan relasinya
     activity.getUsers().forEach( u -> u.getActivities().remove(activity));
+
+    // ambil activitynya lalu hapus activity registernys
+    Set<ActivityRegister> activityRegister = activity.getActivityRegisters();
+    if (Objects.nonNull(activityRegister) && !activityRegister.isEmpty()) {
+      activityRegisterRepository.deleteAll(activityRegister); // Hapus semua registrasi aktivitas
+    }
 
     // save usernya
     userRepository.saveAll(activity.getUsers());

@@ -142,6 +142,19 @@ public class Utils {
     return user;
   }
 
+  public UserActivityRegisterResponse userToActivityRegisterResponse(User user, String regId){
+
+    UserActivityRegisterResponse response = new UserActivityRegisterResponse();
+    response.setRegId(regId);
+    response.setName(user.getName());
+    response.setEmail(user.getEmail());
+    response.setAvatar(user.getAvatar());
+    response.setUsername(user.getUsername());
+    if(Objects.nonNull(user.getMajor())){
+      response.setMajor(user.getMajor().getName());
+    }
+    return response;
+  }
   public SimpleUserResponse userToSimpleUser(User user){
     Certificate certificate = user.getCertificate();
 

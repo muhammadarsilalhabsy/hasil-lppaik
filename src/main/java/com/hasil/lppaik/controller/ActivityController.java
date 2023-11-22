@@ -29,11 +29,11 @@ public class ActivityController {
 
   // GET ALL USER REGISTER FROM ACTIVITIES
   @GetMapping(path = "/{id}/register/users", produces = MediaType.APPLICATION_JSON_VALUE)
-  public WebResponse<List<SimpleUserResponse>> getAllRegisterByActivityId(User user, @PathVariable("id") String id){
+  public WebResponse<List<UserActivityRegisterResponse>> getAllRegisterByActivityId(User user, @PathVariable("id") String id){
 
-    List<SimpleUserResponse> response = activityRegisterService.getAllRegisterByActivityId(user, id);
+    List<UserActivityRegisterResponse> response = activityRegisterService.getAllRegisterByActivityId(user, id);
 
-    return WebResponse.<List<SimpleUserResponse>>builder()
+    return WebResponse.<List<UserActivityRegisterResponse>>builder()
             .data(response)
             .message("Success get all users registered")
             .build();

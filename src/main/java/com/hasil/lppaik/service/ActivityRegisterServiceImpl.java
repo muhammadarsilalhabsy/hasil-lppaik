@@ -4,7 +4,7 @@ import com.hasil.lppaik.entity.Activity;
 import com.hasil.lppaik.entity.ActivityRegister;
 import com.hasil.lppaik.entity.RoleEnum;
 import com.hasil.lppaik.entity.User;
-import com.hasil.lppaik.model.response.SimpleUserResponse;
+import com.hasil.lppaik.model.response.UserActivityRegisterResponse;
 import com.hasil.lppaik.repository.ActivityRegisterRepository;
 import com.hasil.lppaik.repository.ActivityRepository;
 import com.hasil.lppaik.repository.UserRepository;
@@ -46,8 +46,9 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
 
     // Check if the user is already registered for the activity
     boolean isAlreadyRegistered = activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
+    boolean isUserAlreadyRegistered = activityRepo.existsByUsers(candidate);
 
-    if(isAlreadyRegistered){
+    if(isAlreadyRegistered || isUserAlreadyRegistered){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already registered!");
     }
 
@@ -61,7 +62,7 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
   }
 
   @Override
-  public List<SimpleUserResponse> getAllRegisterByActivityId(User user, String activity) {
+  public List<UserActivityRegisterResponse> getAllRegisterByActivityId(User user, String activity) {
     Activity activityTarget = activityRepo.findById(activity)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Activity with id " + activity + " is NOT FOUND"));
@@ -78,7 +79,9 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
 
     List<ActivityRegister> activityRegisters = activityRegRepo.findByActivityId(activityTarget.getId());
     return activityRegisters.stream()
-            .map(activityRegister -> utils.userToSimpleUser(activityRegister.getUser()))
+            .map(activityRegister -> utils.userToActivityRegisterResponse(
+                    activityRegister.getUser(),
+                    activityRegister.getId()))
             .collect(Collectors.toList());
   }
 
@@ -110,6 +113,7 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
                     "Activity with id " + activity + " is NOT FOUND"));
 
     // Check if the user is already registered for the activity
-    return activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
+
+    return activityRepo.existsByUsers(candidate) || activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
   }
 }
