@@ -75,7 +75,8 @@ public class UserServiceImpl implements UserService {
     boolean isAllow = user.getRoles().stream()
             .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
                     || role.getName().equals(RoleEnum.DOSEN)
-                    || role.getName().equals(RoleEnum.KATING));
+                    || role.getName().equals(RoleEnum.KATING)
+                    || role.getName().equals(RoleEnum.TUTOR));
 
     if(!isAllow){
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");

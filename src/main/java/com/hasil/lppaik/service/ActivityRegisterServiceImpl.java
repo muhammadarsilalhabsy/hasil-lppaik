@@ -114,6 +114,7 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
 
     // Check if the user is already registered for the activity
 
-    return activityRepo.existsByUsersAndId(candidate, activity) || activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
+    return activityRepo.existsByUsersAndId(candidate, activity) ||
+           activityRegRepo.existsByUserAndActivity(candidate, activityTarget);
   }
 }

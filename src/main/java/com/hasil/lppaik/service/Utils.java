@@ -7,6 +7,7 @@ import com.hasil.lppaik.model.response.*;
 import com.hasil.lppaik.repository.CertificateRepository;
 import com.hasil.lppaik.repository.MajorRepository;
 import com.hasil.lppaik.repository.RoleRepository;
+import com.hasil.lppaik.repository.UserRepository;
 import com.hasil.lppaik.security.BCrypt;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
@@ -35,15 +37,18 @@ public class Utils {
 
   private final MajorRepository majorRepository;
   private final RoleRepository roleRepository;
+
+  private final UserRepository userRepository;
   private final CertificateRepository certificateRepository;
 
   @Autowired
   public Utils(Validator validator, MajorRepository majorRepository,
                RoleRepository roleRepository,
-               CertificateRepository certificateRepository) {
+               UserRepository userRepository, CertificateRepository certificateRepository) {
     this.validator = validator;
     this.majorRepository = majorRepository;
     this.roleRepository = roleRepository;
+    this.userRepository = userRepository;
     this.certificateRepository = certificateRepository;
   }
 
@@ -220,6 +225,10 @@ public class Utils {
 
     return outputStream.toByteArray();
 
+  }
+
+  public Optional<User> findUserByRole(RoleEnum roleName) {
+    return userRepository.findByRoles_Name(roleName).stream().findFirst();
   }
 
   public static byte[] decompressImage(byte[] data) {

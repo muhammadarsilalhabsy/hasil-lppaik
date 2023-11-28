@@ -5,7 +5,13 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public enum RoleEnum {
-  MAHASISWA, KATING, ADMIN, DOSEN, TUTOR;
+  MAHASISWA,
+  KATING,
+  ADMIN,
+  DOSEN,
+  TUTOR,
+  REKTOR,
+  KETUA;
 
   public static boolean isValidRoleEnum(final String role) {
     return Arrays.stream(RoleEnum.values())
