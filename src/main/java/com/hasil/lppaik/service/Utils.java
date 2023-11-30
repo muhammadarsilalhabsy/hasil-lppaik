@@ -258,4 +258,25 @@ public class Utils {
 
     return tanggal + "-" + jam + "-" + Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s","-");
   }
+
+  public static String nameSplit(String name){
+    // Bagi nama menjadi beberapa bagian
+    String[] parts = name.split(" ");
+
+    // Inisialisasi hasil dengan bagian pertama
+    StringBuilder result = new StringBuilder(parts[0]);
+
+    // Loop untuk menambahkan bagian-bagian berikutnya jika lebih dari satu
+    for (int i = 1; i < parts.length; i++) {
+      // Jika bagian tersebut hanya satu huruf, tambahkan ke hasil
+      if (parts[i].length() == 1) {
+        result.append(" ").append(parts[i]);
+        break; // Hentikan loop jika sudah menambahkan bagian satu huruf
+      }
+
+      // Jika lebih dari satu huruf, tambahkan hanya huruf pertama
+      result.append(" ").append(parts[i].substring(0, 1));
+    }
+  return result.toString();
+  }
 }

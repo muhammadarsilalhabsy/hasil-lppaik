@@ -7,7 +7,10 @@ import com.hasil.lppaik.model.request.SearchActivityRequest;
 import com.hasil.lppaik.model.request.UpdateActivityRequest;
 import com.hasil.lppaik.model.response.ActivityResponse;
 import com.hasil.lppaik.model.response.UserResponse;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+
+import java.io.IOException;
 
 public interface ActivityService {
 
@@ -26,4 +29,6 @@ public interface ActivityService {
   Page<UserResponse> getAttendance(User user, PagingRequest request);
 
   void removeUserFromActivity(User user, String id, String username);
+
+  Resource downloadCurrentUserActivity(User user) throws IOException;
 }

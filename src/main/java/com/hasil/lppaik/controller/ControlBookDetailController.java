@@ -1,6 +1,7 @@
 package com.hasil.lppaik.controller;
 
 
+import com.google.zxing.WriterException;
 import com.hasil.lppaik.entity.User;
 import com.hasil.lppaik.model.request.CreateControlBookDetailRequest;
 import com.hasil.lppaik.model.request.PagingRequest;
@@ -11,11 +12,17 @@ import com.hasil.lppaik.model.response.WebResponse;
 import com.hasil.lppaik.model.response.WebResponseWithPaging;
 import com.hasil.lppaik.service.ControlBookDetailServiceImpl;
 import com.hasil.lppaik.service.Utils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -84,5 +91,19 @@ public class ControlBookDetailController {
             .data("OK")
             .message(String.format("Success add new lesson for user with id %s", username))
             .build();
+  }
+
+  @GetMapping("/download")
+  public ResponseEntity<byte[]> downloadFile(User user) throws IOException{
+
+    Resource resource = cbdService.download(user);
+
+    byte[] data = IOUtils.toByteArray(resource.getInputStream());
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    headers.setContentDispositionFormData("attachment", "output-report-user-cbd.pdf");
+
+    return new ResponseEntity<>(data, headers, HttpStatus.OK);
   }
 }

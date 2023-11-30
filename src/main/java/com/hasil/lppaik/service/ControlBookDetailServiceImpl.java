@@ -10,6 +10,8 @@ import com.hasil.lppaik.repository.UserRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.hasil.lppaik.service.PdfService.makeCBDReport;
 
 @Service
 public class ControlBookDetailServiceImpl implements ControlBookDetailService {
@@ -38,6 +46,18 @@ public class ControlBookDetailServiceImpl implements ControlBookDetailService {
     this.utils = utils;
     this.cbdRepository = cbdRepository;
     this.userRepository = userRepository;
+  }
+
+  @Override
+  public Resource download(User user) throws FileNotFoundException, MalformedURLException {
+    makeCBDReport(user);
+
+    Path filePath = Path.of("assets/output-report-user-cbd.pdf");
+    if(!Files.exists(filePath)) {
+      throw new FileNotFoundException("file was not found on the server");
+    }
+
+    return new UrlResource(filePath.toUri());
   }
 
   @Override

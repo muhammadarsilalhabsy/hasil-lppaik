@@ -11,9 +11,22 @@ import com.hasil.lppaik.repository.ActivityImageRepository;
 import com.hasil.lppaik.repository.ActivityRegisterRepository;
 import com.hasil.lppaik.repository.ActivityRepository;
 import com.hasil.lppaik.repository.UserRepository;
+import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.property.TextAlignment;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -21,8 +34,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.hasil.lppaik.service.PdfUtils.*;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
@@ -337,5 +357,174 @@ public class ActivityServiceImpl implements ActivityService {
 
     activityRepository.save(activity);
 
+  }
+  @Override
+  public Resource downloadCurrentUserActivity(User user) throws IOException {
+
+    makeActivityReportForCurrentUser(user);
+
+    Path filePath = Path.of("assets/output-report-user-activities.pdf");
+    if(!Files.exists(filePath)) {
+      throw new FileNotFoundException("file was not found on the server");
+    }
+
+    return new UrlResource(filePath.toUri());
+  }
+
+  public void makeActivityReportForCurrentUser(User user) throws MalformedURLException, FileNotFoundException {
+
+    // file destination
+    String output = "assets/output-report-user-activities.pdf";
+    String signatureImg = "assets/images/signature.png";
+    String logoImg = "assets/images/umk1.png";
+
+    PdfWriter writer = new PdfWriter(output);
+    PdfDocument pdfDocument = new PdfDocument(writer);
+    pdfDocument.setDefaultPageSize(PageSize.A4);
+
+    // get ketua
+    Optional<User> ketua = Optional.ofNullable(utils.findUserByRole(RoleEnum.KETUA)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Please create USER with role KETUA")));
+
+
+
+    // HEADER
+    Table header = new Table(new float[]{
+            percentPerWidth(container, 1.0f / 12),
+            percentPerWidth(container, 8.0f / 12),
+            percentPerWidth(container, 3.0f / 12)
+    });
+
+    // header title
+    Table headerTitle = new Table(new float[]{percentPerWidth(container, 9.0f / 12)});
+
+    headerTitle.addCell(setTextBold("UNIVERSITAS MUHAMMADIYAH KENDARI", 13f)
+            .setPadding(5f)
+            .setCharacterSpacing(1.5f)
+            .setTextAlignment(TextAlignment.CENTER)
+    );
+    headerTitle.addCell(setTextBold("LEMBAGA PENGKAJIAN DAN PENGAMALAN AIK", 10f)
+            .setTextAlignment(TextAlignment.CENTER)
+            .setCharacterSpacing(1.5f)
+    );
+    // -------------
+
+    // header detail
+    Table headerDetail = new Table(new float[]{percentPerWidth(container, 11f / 12)});
+    headerDetail.addCell(setText("Jl. KH. Ahmad Dahlan No.10 Kendari", 5f));
+
+    headerDetail.addCell(setText("Tlp : 08533661912", 5f));
+    headerDetail.addCell(setText("Email : aik@gmail.com", 5f));
+    headerDetail.addCell(setText("Website : lppaik.netlify", 5f));
+    // -------------
+
+
+    // header
+    header.addCell(new Cell().add(image(logoImg)
+                    .setWidth(55f)
+                    .setHeight(50f))
+            .setBorder(Border.NO_BORDER)
+    );
+    header.addCell(new Cell().add(headerTitle).setBorder(Border.NO_BORDER));
+    header.addCell(new Cell().add(headerDetail).setBorder(Border.NO_BORDER).setBorderLeft(border(3, Color.BLACK)));
+    // -------------
+
+
+    // core
+    Table core = new Table(new float[]{wFull});
+
+    core.addCell(setText("Lembaga Pengkajian dan Pengamalan Al-Islam dan Kemuhammadiyahan" +
+            " menyatakan bahwa berdasarkan hasil laporan kehadiran, mahasiswa tersebut di bawah ini:").setTextAlignment(TextAlignment.JUSTIFIED));
+
+    Table userDetail = new Table(new float[]{percentPerWidth(container, 8.0f / 12)});
+
+
+
+    userDetail.addCell(setText("Nama \t\t\t\t\t\t : " + user.getName()));
+    userDetail.addCell(setText("Stanbuk \t\t\t\t\t : " + user.getUsername()));
+    userDetail.addCell(setText("Program Studi\t\t\t: " + user.getMajor().getName()));
+
+    core.addCell(new Cell().add(userDetail.setMarginTop(20).setMarginBottom(20).setMarginLeft(20)).setBorder(Border.NO_BORDER));
+    core.addCell(setText("Dinyatakan telah mengikuti kegiatan - kegiatan sebagai berikut:"));
+    // -------------
+
+    float [] productTblWidth = {20f, 381f, 125f};
+
+    Table tableActivityList = new Table(productTblWidth);
+
+    Set<Activity> activities = user.getActivities();
+
+    // Melakukan sorting berdasarkan tanggal secara descending
+    Set<Activity> sortedActivities = activities.stream()
+            .sorted(Comparator.comparing(Activity::getDate).reversed())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+
+    // list header
+    tableActivityList.addCell(tableHead("No", 9).setTextAlignment(TextAlignment.CENTER));
+    tableActivityList.addCell(tableHead("Judul Kegiatan", 9).setTextAlignment(TextAlignment.CENTER));
+    tableActivityList.addCell(tableHead("Tanggal", 9).setTextAlignment(TextAlignment.CENTER));
+
+    // list content
+    int num = 0;
+    int maxActivities = 10; // Jumlah maksimum elemen yang ingin ditampilkan
+
+    for (Activity activity : sortedActivities) {
+      num++;
+      tableActivityList.addCell(tableData(String.valueOf(num)).setTextAlignment(TextAlignment.CENTER));
+      tableActivityList.addCell(tableData(activity.getTitle(), 11).setTextAlignment(TextAlignment.CENTER));
+      tableActivityList.addCell(tableData(String.valueOf(activity.getDate()), 11).setTextAlignment(TextAlignment.CENTER));
+    }
+
+    for (int i = sortedActivities.size() + 1; i <= maxActivities; i++) {
+      tableActivityList.addCell(tableData(String.valueOf(i)).setTextAlignment(TextAlignment.CENTER));
+      tableActivityList.addCell(tableData("").setTextAlignment(TextAlignment.CENTER));
+      tableActivityList.addCell(tableData("").setTextAlignment(TextAlignment.CENTER));
+    }
+
+    // -------------
+
+    // signature
+
+    Table signature = new Table(new float[]{container});
+
+    signature.addCell(setText("Kendari, 27 agustus 2023")
+            .setTextAlignment(TextAlignment.RIGHT));
+
+    signature.addCell(setTextBold("Kepala Lppaik", 11)
+            .setTextAlignment(TextAlignment.RIGHT).setPaddingBottom(45));
+
+
+    Text underlinedText = new Text(ketua.get().getName()).setUnderline(1, -2);
+    Paragraph paragraph = new Paragraph(underlinedText)
+            .setTextAlignment(TextAlignment.RIGHT)
+            .setFontSize(12)
+            .setCharacterSpacing(0.5f)
+            .setMarginBottom(5);
+
+    signature.addCell(new Cell().add(paragraph.setTextAlignment(TextAlignment.RIGHT))
+            .setBorder(Border.NO_BORDER));
+
+    signature.addCell(setText("NIDN." + ketua.get().getUsername()).setTextAlignment(TextAlignment.RIGHT).setPaddingTop(-10f));
+
+
+    signature.addCell(new Cell().add(image(signatureImg)
+                    .scaleAbsolute(210, 100)
+                    .setFixedPosition(380, 60))
+            .setBorder(Border.NO_BORDER)
+    );
+    // -------------
+
+    // document
+    Document document = new Document(pdfDocument);
+    document.add(header);
+    document.add(underline(container, 0.5f , Color.GRAY).setMarginTop(10));
+    document.add(core.setMarginTop(40));
+    document.add(tableActivityList.setMarginTop(10));
+    document.add(signature.setMarginTop(20));
+
+    document.close();
+
+    System.out.println("Completed");
   }
 }
