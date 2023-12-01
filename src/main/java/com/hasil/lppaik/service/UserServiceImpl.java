@@ -161,7 +161,9 @@ public class UserServiceImpl implements UserService {
         Join<User, Role> role = root.join("roles");
         predicates.add(builder.and(
                 builder.notEqual(role.get("name"), RoleEnum.ADMIN),
-                builder.notEqual(role.get("name"), RoleEnum.DOSEN)
+                builder.notEqual(role.get("name"), RoleEnum.DOSEN),
+                builder.notEqual(role.get("name"), RoleEnum.KETUA),
+                builder.notEqual(role.get("name"), RoleEnum.REKTOR)
         ));
       }
 
