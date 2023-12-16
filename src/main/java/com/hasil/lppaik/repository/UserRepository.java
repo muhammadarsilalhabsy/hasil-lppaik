@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, String>,
   Optional<User> findFirstByToken(String token);
 
   List<User> findByRoles_Name(RoleEnum roleName);
+
+  Optional<User> findByEmail(String email);
 }

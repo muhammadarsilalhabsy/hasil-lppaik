@@ -31,5 +31,7 @@ public class ActivityResponse {
 
   private String startTime;
 
+  private Boolean mandatory;
+
   private List<String> images;
 }

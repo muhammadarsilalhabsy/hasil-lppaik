@@ -100,6 +100,7 @@ public class Utils {
     response.setTitle(activity.getTitle());
     response.setLocation(activity.getLocation());
     response.setDescription(activity.getDescription());
+    response.setMandatory(activity.getMandatory());
     if(activity.getImages().size() != 0) {
       response.setImages(activity.getImages().stream().map(ActivityImage::getImage)
               .collect(Collectors.toList()));

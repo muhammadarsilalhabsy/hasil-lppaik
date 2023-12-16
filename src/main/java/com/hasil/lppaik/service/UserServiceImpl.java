@@ -231,6 +231,10 @@ public class UserServiceImpl implements UserService {
     }
 
     if(Objects.nonNull(request.getEmail())){
+      User checkUser = userRepository.findByEmail(request.getEmail()).orElse(null);
+      if(Objects.nonNull(checkUser) && checkUser != candidate){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already taken");
+      }
       candidate.setEmail(request.getEmail());
     }
 
@@ -293,6 +297,10 @@ public class UserServiceImpl implements UserService {
     utils.validate(request);
 
     if(Objects.nonNull(request.getEmail())){
+      User checkUser = userRepository.findByEmail(request.getEmail()).orElse(null);
+      if(Objects.nonNull(checkUser) && checkUser != user){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already taken");
+      }
       user.setEmail(request.getEmail());
     }
 
@@ -341,13 +349,19 @@ public class UserServiceImpl implements UserService {
     }
 
     User isExist = userRepository.findById(request.getUsername()).orElse(null);
+
     if(Objects.nonNull(isExist)){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This User already created");
     }
+
     User newUser = new User();
+    User checkUser = userRepository.findByEmail(request.getEmail()).orElse(null);
 
     newUser.setUsername(request.getUsername());
     newUser.setName(request.getName());
+    if(Objects.nonNull(checkUser)){
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already taken");
+    }
     newUser.setEmail(request.getEmail());
     newUser.setPassword(BCrypt.hashpw(request.getUsername(), BCrypt.gensalt()));
     Major major = majorRepository.findById(request.getMajor()).orElseThrow(() ->
