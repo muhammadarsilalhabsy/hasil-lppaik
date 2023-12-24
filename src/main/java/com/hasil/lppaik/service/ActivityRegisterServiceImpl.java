@@ -103,6 +103,15 @@ public class ActivityRegisterServiceImpl implements ActivityRegisterService {
   }
 
   @Override
+  public void remove(User user){
+    System.out.println(activityRegRepo.existsByUser(user));
+    if(activityRegRepo.existsByUser(user)){
+      activityRegRepo.deleteByUser(user);
+    }
+
+    // otherwise do nothing
+  }
+  @Override
   public boolean isRegistered(User user, String activity) {
 
     User candidate = userRepo.findById(user.getUsername())

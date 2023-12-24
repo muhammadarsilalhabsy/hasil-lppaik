@@ -14,4 +14,8 @@ public interface ActivityRegisterRepository extends JpaRepository<ActivityRegist
   List<ActivityRegister> findByActivityId(String activityId);
 
   boolean existsByUserAndActivity(User candidate, Activity activityTarget);
+
+  boolean existsByUser(User user);
+
+  void deleteByUser(User user);
 }

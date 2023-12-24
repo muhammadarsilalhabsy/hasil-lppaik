@@ -24,6 +24,8 @@ public interface ActivityService {
 
   void addActivityToOtherUser(User user, String id, String username, String regId);
 
+  void addActivityToUser(User user, String id, String username);
+
   Page<ActivityResponse> getAllActivities(SearchActivityRequest request);
 
   Page<UserResponse> getAttendance(User user, PagingRequest request);

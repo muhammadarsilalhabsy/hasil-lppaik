@@ -129,6 +129,34 @@ public class ActivityServiceImpl implements ActivityService {
 
   @Override
   @Transactional
+  public void addActivityToUser(User user, String id, String username) {
+    boolean isAllow = user.getRoles()
+            .stream()
+            .anyMatch(role ->
+                    role.getName().equals(RoleEnum.ADMIN) ||
+                            role.getName().equals(RoleEnum.KATING)
+            );
+
+    if(!isAllow){
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
+    }
+
+    Activity activity = activityRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Activity with id " + id + " is NOT FOUND"));
+
+    User candidate = userRepository.findById(username)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with id " + username + " is NOT FOUND"));
+
+    candidate.getActivities().add(activity);
+
+    activityRegisterService.remove(candidate);
+
+    userRepository.save(candidate);
+  }
+
+  @Override
+  @Transactional
   public void updateActivity(User user, UpdateActivityRequest request) {
     utils.validate(request);
 

@@ -101,14 +101,28 @@ public class ActivityController {
             .build();
   }
 
-  // ADD ACTIVITY TO OTHER USER [ADMIN, KATING]
-  @PostMapping(path = "{id}/for/{username}/with-register/{reg}", produces = MediaType.APPLICATION_JSON_VALUE)
+  // ADD ACTIVITY TO OTHER USER [ADMIN, KATING] (with register)
+  @PostMapping(path = "/{id}/for/{username}/with-register/{reg}", produces = MediaType.APPLICATION_JSON_VALUE)
   public WebResponse<String> addActivityToOtherUser(User user,
                                                     @PathVariable("username") String username,
                                                     @PathVariable("id") String id,
                                                     @PathVariable("reg") String regId){
 
     activityService.addActivityToOtherUser(user, id, username, regId);
+
+    return WebResponse.<String>builder()
+            .data("OK")
+            .message(String.format("Success add activity for user with id %s", username))
+            .build();
+  }
+
+  // ADD ACTIVITY TO USER [ADMIN, KATING]
+  @PostMapping(path = "/{id}/for/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public WebResponse<String> addActivityToUser(User user,
+                                                    @PathVariable("username") String username,
+                                                    @PathVariable("id") String id){
+
+    activityService.addActivityToUser(user, id, username);
 
     return WebResponse.<String>builder()
             .data("OK")

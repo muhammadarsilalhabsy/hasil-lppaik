@@ -12,6 +12,7 @@ public interface ActivityRegisterService {
   List<UserActivityRegisterResponse> getAllRegisterByActivityId(User user, String activity);
 
   void remove(User user, String id);
+  void remove(User user);
 
   boolean isRegistered(User user, String activity);
 
