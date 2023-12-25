@@ -176,7 +176,7 @@ public class CertificateServiceImpl implements CertificateService {
     Document doc = new Document(document);
 
 
-    String qrResult = "http://localhost:8080/certificate/" + certificate.getId();
+    String qrResult = "https://my-lppaik.netlify.app/certificate/" + certificate.getId();
     BitMatrix matrix = new MultiFormatWriter()
             .encode(qrResult, BarcodeFormat.QR_CODE, 250, 250);
 
