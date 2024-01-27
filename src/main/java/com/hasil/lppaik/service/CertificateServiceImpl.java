@@ -143,7 +143,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     // REKTOR
     Paragraph rektorName = new Paragraph(rektor.get().getName())
-            .setFont(fontReg).setBold().setTextAlignment(TextAlignment.CENTER).setFixedPosition(85, 85, 300);
+            .setFont(fontReg).setBold().setTextAlignment(TextAlignment.CENTER).setFixedPosition(65, 85, 400);
 
     // REKTOR: ID
     Paragraph rektorNIDN = new Paragraph(rektor.get().getUsername())
