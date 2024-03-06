@@ -164,10 +164,17 @@ public class CertificateServiceImpl implements CertificateService {
             .setFont(fontReg).setFixedPosition(650, 215, 150);
 
     // SIGNATURE
-    ImageData signature = ImageDataFactory.create("assets/images/signature.png");
+    // 1. rektor
+    ImageData signature = ImageDataFactory.create("assets/images/rektor.png");
     Image image = new Image(signature);
-    image.scaleAbsolute(210, 100);
-    image.setFixedPosition(120, 80);
+    image.scaleAbsolute(180, 75);
+    image.setFixedPosition(130, 80);
+
+    // 2. ketua
+    ImageData signature2 = ImageDataFactory.create("assets/images/ketua.png");
+    Image image2 = new Image(signature2);
+    image2.scaleAbsolute(210, 75);
+    image2.setFixedPosition(490, 80);
 
 //    Table temp = new Table(new float[]{150});
 //    temp.addCell(new Cell().add("Program Studi Ilmu Hukum"));
@@ -198,6 +205,7 @@ public class CertificateServiceImpl implements CertificateService {
     doc.add(tanggalIslam);
     doc.add(tanggalMasehi);
     doc.add(image);
+    doc.add(image2);
     doc.add(qrAcutualImage);
 //    doc.add(temp);
 
