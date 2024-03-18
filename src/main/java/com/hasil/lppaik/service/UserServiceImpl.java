@@ -133,14 +133,12 @@ public class UserServiceImpl implements UserService {
             .anyMatch(role -> role.getName().equals(RoleEnum.ADMIN)
                             || role.getName().equals(RoleEnum.DOSEN)
                             || role.getName().equals(RoleEnum.TUTOR)
+                            || role.getName().equals(RoleEnum.KETUA)
                             || role.getName().equals(RoleEnum.KATING));
 
     if(!isAllow){
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This Operation is not support for you role!");
     }
-
-    boolean isKATING = user.getRoles().stream()
-            .anyMatch(role -> role.getName().equals(RoleEnum.KATING));
 
     // query
     Specification<User> specification = (root, query, builder) -> {
@@ -157,45 +155,27 @@ public class UserServiceImpl implements UserService {
         predicates.add(builder.equal(major.get("name"), request.getMajor()));
       }
 
-      if(isKATING){
-        Join<User, Role> role = root.join("roles");
-        predicates.add(builder.and(
-                builder.notEqual(role.get("name"), RoleEnum.ADMIN),
-                builder.notEqual(role.get("name"), RoleEnum.DOSEN),
-                builder.notEqual(role.get("name"), RoleEnum.KETUA),
-                builder.notEqual(role.get("name"), RoleEnum.REKTOR)
-        ));
+      boolean isTutor = user.getRoles().stream()
+              .anyMatch(role -> role.getName().equals(RoleEnum.TUTOR));
+
+      boolean show = user.getRoles().stream()
+              .anyMatch(role -> role.getName().equals(RoleEnum.KETUA) ||
+                      role.getName().equals(RoleEnum.ADMIN));
+
+      boolean isDosen = user.getRoles().stream()
+              .anyMatch(role -> role.getName().equals(RoleEnum.DOSEN));
+
+      if (!show){
+        if(!(isTutor && isDosen)){
+            Join<User, Role> role = root.join("roles");
+            predicates.add(builder.and(
+                    builder.notEqual(role.get("name"), RoleEnum.ADMIN),
+                    builder.notEqual(role.get("name"), RoleEnum.DOSEN),
+                    builder.notEqual(role.get("name"), RoleEnum.KETUA),
+                    builder.notEqual(role.get("name"), RoleEnum.REKTOR)
+            ));
+        }
       }
-
-//      if(isKATING){
-//        Join<User, Role> role = root.join("roles");
-//        predicates.add(
-//                builder.and(
-//                        builder.or(
-//                                builder.equal(role.get("name"), RoleEnum.KATING),
-//                                builder.equal(role.get("name"), RoleEnum.MAHASISWA)
-//                        ),
-//                        builder.or(
-//                                builder.notEqual(role.get("name"), RoleEnum.ADMIN),
-//                                builder.notEqual(role.get("name"), RoleEnum.DOSEN))
-//                )
-//        );
-//      }
-
-      ///-----------
-      // Tambahkan kriteria untuk role yang diizinkan (RoleEnum.KATING) dan tidak memiliki Role ADMIN atau DOSEN
-//      Join<User, Role> roleJoin = root.join("roles");
-//      Expression<String> roleNameExpression = roleJoin.get("name");
-//      Predicate roleAllowedPredicate = builder.equal(roleNameExpression, RoleEnum.KATING);
-//
-//      // Tambahkan kriteria untuk menghindari Role ADMIN atau DOSEN
-//      Predicate roleNotAllowedPredicate = builder.or(
-//              builder.notEqual(roleNameExpression, RoleEnum.ADMIN),
-//              builder.notEqual(roleNameExpression, RoleEnum.DOSEN)
-//      );
-//
-//      predicates.add(builder.and(roleAllowedPredicate, roleNotAllowedPredicate));
-      ///-----------
 
       return query.where(predicates.toArray(new Predicate[]{})).getRestriction();
 
