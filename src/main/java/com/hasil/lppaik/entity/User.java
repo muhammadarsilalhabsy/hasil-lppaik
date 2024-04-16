@@ -66,6 +66,9 @@ public class User {
   @OneToOne(mappedBy = "user")
   private Certificate certificate;
 
+  @OneToOne(mappedBy = "user")
+  private EmailVerification emailVerification;
+
   @OneToMany(mappedBy = "user")
   private List<ControlBookDetail> controlBookDetailUser;
 

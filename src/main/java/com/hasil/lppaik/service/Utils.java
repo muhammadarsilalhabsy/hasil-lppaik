@@ -178,6 +178,22 @@ public class Utils {
     }
     return response;
   }
+
+  public SimpleEmailVerifyResponse userToSimpleUser(User user,
+                                                    String token,
+                                                    Long expired){
+
+    SimpleEmailVerifyResponse response = new SimpleEmailVerifyResponse();
+    response.setName(user.getName());
+    response.setAvatar(user.getAvatar());
+    response.setUsername(user.getUsername());
+    response.setToken(token);
+    response.setExpired(expired);
+    if(Objects.nonNull(user.getMajor())){
+      response.setMajor(user.getMajor().getName());
+    }
+    return response;
+  }
   public UserResponse getUserResponse(User user){
     Certificate certificate = user.getCertificate();
     UserResponse response = new UserResponse();

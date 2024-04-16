@@ -2,6 +2,7 @@ package com.hasil.lppaik.service;
 
 import com.google.zxing.WriterException;
 import com.hasil.lppaik.entity.User;
+import com.hasil.lppaik.model.request.EmailRequest;
 import com.hasil.lppaik.model.response.CertificateResponse;
 import com.hasil.lppaik.model.response.SimpleUserResponse;
 import org.springframework.core.io.Resource;
