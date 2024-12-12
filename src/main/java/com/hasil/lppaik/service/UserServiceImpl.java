@@ -42,10 +42,12 @@ public class UserServiceImpl implements UserService {
   private final ControlBookDetailRepository cbdRepository;
   private final CertificateRepository certificateRepository;
 
+  private final EmailVerificationRepository emailVerificationRepository;
+
   @Autowired
   public UserServiceImpl(Utils utils, UserRepository userRepository, RoleRepository roleRepository, ImageServiceImpl imageService, CertificateServiceImpl certificateService, ActivityRepository activityRepository,
                          MajorRepository majorRepository, ActivityRegisterRepository activityRegisterRepository, ControlBookDetailRepository cbdRepository,
-                         CertificateRepository certificateRepository) {
+                         CertificateRepository certificateRepository, EmailVerificationRepository emailVerificationRepository) {
     this.utils = utils;
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
     this.activityRegisterRepository = activityRegisterRepository;
     this.cbdRepository = cbdRepository;
     this.certificateRepository = certificateRepository;
+    this.emailVerificationRepository = emailVerificationRepository;
   }
 
   @Override
@@ -407,6 +410,11 @@ public class UserServiceImpl implements UserService {
       candidate.getRoles().clear(); // Hapus semua peran
     }
 
+    EmailVerification emailVerification = candidate.getEmailVerification();
+    if (Objects.nonNull(emailVerification)){
+      emailVerificationRepository.delete(emailVerification); // hapus email verificaion jika ada
+    }
+
     userRepository.delete(candidate); // Hapus pengguna setelah menghapus semua elemen yang terkait
 
     // find all user activity then remove all, (putuskan relasi)
@@ -434,7 +442,7 @@ public class UserServiceImpl implements UserService {
 //    }
 
 
-    userRepository.delete(candidate);
+//    userRepository.delete(candidate);
 
   }
 }

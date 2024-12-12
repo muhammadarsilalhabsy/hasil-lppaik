@@ -30,8 +30,8 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
   // static
   public static final String SUBJECT_EMAIL = "Persetujuan Kelulusan BTQ";
   public static final String UTF_8_ENCODING = "UTF-8";
-//  private static final String host = "https://my-lppaik.netlify.app";
-  private static final String host = "http://localhost:5173";
+  private static final String host = "https://my-lppaik.netlify.app";
+//  private static final String host = "http://localhost:5173";
   private static final String FROM_EMAIL = "tumbalku00000@gmail.com"; // harusnya di simpan di .properties
   private static final String TO_EMAIL = "meaku00000@gmail.com"; // harusnya di simpan di .properties
 

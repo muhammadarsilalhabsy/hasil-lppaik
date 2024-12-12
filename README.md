@@ -12,6 +12,6 @@ https://documenter.getpostman.com/view/16768841/2s9YXe6NtU
     - mvn spring-boot:run
 3. run ngrok
     - ngrok start <ngrok-tunnel-name>
-4. copy ngrok link to react application (.env)
+4. copy ngrok link to react application (.env1)
 5. push commit react application
 6. wait for changes from react application [React-app](https://my-lppaik.netlify.app/)
